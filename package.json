@@ -1,15 +1,17 @@
 {
-  "name": "redruum",
+  "name": "redroom",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "type-check": "tsc --noEmit",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "motion": "^12.42.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

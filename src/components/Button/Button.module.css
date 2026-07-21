@@ -1,0 +1,39 @@
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  border: 1px solid rgba(234, 229, 223, 0.25);
+  border-radius: 999px;
+  padding: 12px;
+  box-shadow:
+    0 8px 24px rgba(10, 10, 10, 0.18),
+    inset 0 1px 0 rgba(234, 229, 223, 0.1);
+  outline: none;
+  background-color: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  cursor: pointer;
+  inline-size: min-content;
+  block-size: min-content;
+}
+
+.button:has(.label) {
+  padding: 12px 20px;
+}
+
+.button:disabled {
+  color: var(--text-secondary);
+}
+
+.icon {
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+.label {
+  color: var(--text-dark);
+  font-family: "Inter";
+  font-weight: 600;
+  font-size: var(--font-size-s);
+}

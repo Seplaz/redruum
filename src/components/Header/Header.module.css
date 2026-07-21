@@ -1,0 +1,12 @@
+.header {
+  display: flex;
+}
+
+.header_right {
+  inline-size: 100%;
+  background-color: var(--surface);
+}
+
+.logo {
+  display: block;
+}

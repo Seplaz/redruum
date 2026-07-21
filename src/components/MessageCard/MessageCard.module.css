@@ -1,0 +1,32 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(234, 229, 223, 0.25);
+  border-radius: var(--border-radius-l);
+  padding: 12px;
+  outline: none;
+  color: var(--text-dark);
+  background-color: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  inline-size: fit-content;
+}
+
+.id {
+  display: flex;
+  justify-content: center;
+  border-radius: var(--border-radius-l);
+  padding: 6px;
+  color: var(--text-dark);
+  font-family: "Inter Italic";
+  font-weight: 700;
+  font-size: var(--font-size-s);
+  background-color: var(--glass);
+  inline-size: 48px;
+}
+
+.text {
+  font-family: "Inter";
+  font-weight: 400;
+  font-size: var(--font-size-m);
+}

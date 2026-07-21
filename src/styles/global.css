@@ -1,0 +1,14 @@
+@import url(./variables.css);
+@import url(./fonts.css);
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--text-light);
+  background: var(--bg);
+  block-size: 100svb;
+}

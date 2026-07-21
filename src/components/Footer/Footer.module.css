@@ -1,0 +1,17 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 24px;
+  background-color: var(--bg);
+}
+
+.logo {
+  display: block;
+  inline-size: 97px;
+}
+
+.text {
+  font-family: 'CoFo Kak Black';
+  font-size: var(--font-size-s);
+}

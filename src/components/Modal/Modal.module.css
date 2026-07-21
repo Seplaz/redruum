@@ -1,0 +1,24 @@
+.modal {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background-color: var(--glass);
+  backdrop-filter: blur(var(--blur));
+}
+
+.header {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  block-size: 100%;
+}
