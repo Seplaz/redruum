@@ -1,65 +1,72 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+
 import styles from "./Content.module.css";
+
 import Title from "../Title/Title";
 import MessageList from "../MessageList/MessageList";
 import Button from "../Button/Button";
-import pencil from "../../assets/icons/pencil.svg";
 import Modal from "../Modal/Modal";
-import send_icon from "../../assets/icons/send.svg";
-import { motion } from "motion/react";
+
+import pencilIcon from "../../assets/icons/pencil.svg";
+import sendIcon from "../../assets/icons/send.svg";
+
+import type { Message } from "../../types/message";
+
+import { createMessage, getMessages } from "../../services/messages";
+import { supabase } from "../../lib/supabase";
 
 const Content = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
 
-  const handleSend = () => {
-    console.log("Отправляем:", messageText);
-    setIsModalOpen(false);
-    setMessageText("");
-  };
+  useEffect(() => {
+    const loadMessages = async () => {
+      try {
+        const data = await getMessages();
+        setMessages(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  const messages = [
-    {
-      id: 1,
-      text: "Сегодня впервые признался себе в том, чего действительно хочу.",
-    },
-    {
-      id: 2,
-      text: "Иногда самые запретные мысли оказываются самыми честными.",
-    },
-    {
-      id: 3,
-      text: "Я поцеловал человека, о котором никому никогда не рассказывал.",
-    },
-    {
-      id: 4,
-      text: "До сих пор вспоминаю ту ночь и улыбаюсь.",
-    },
-    {
-      id: 5,
-      text: "Мне всегда было интересно попробовать то, о чём обычно молчат.",
-    },
-    {
-      id: 6,
-      text: "Однажды я соврал, что всё было идеально. На самом деле — нет.",
-    },
-    {
-      id: 7,
-      text: "Иногда хочется просто рассказать всё незнакомцам и больше никогда об этом не думать.",
-    },
-    {
-      id: 8,
-      text: "Самое смелое решение в моей жизни я принял совершенно спонтанно.",
-    },
-    {
-      id: 9,
-      text: "Я до сих пор храню сообщение, которое давно должен был удалить.",
-    },
-    {
-      id: 10,
-      text: "Есть фантазия, о которой я ещё никому не рассказывал.",
-    },
-  ];
+    loadMessages();
+
+    const channel = supabase
+      .channel("messages")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        (payload) => {
+          setMessages((previous) => [payload.new as Message, ...previous]);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleSend = async () => {
+    const text = messageText.trim();
+
+    if (!text) return;
+
+    try {
+      await createMessage(text);
+
+      setMessageText("");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className={styles.content}>
@@ -68,15 +75,18 @@ const Content = () => {
           Делись тем,
           <br />о чём молчишь
         </Title>
+
         <MessageList messages={messages} />
       </motion.div>
+
       <motion.div
         className={styles.write_button}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
       >
-        <Button icon={pencil} onClick={() => setIsModalOpen(true)} />
+        <Button icon={pencilIcon} onClick={() => setIsModalOpen(true)} />
       </motion.div>
+
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <textarea
           className={styles.modal_textarea}
@@ -84,11 +94,12 @@ const Content = () => {
           onChange={(e) => setMessageText(e.target.value)}
           placeholder="Расскажи свои тайны..."
         />
+
         <div className={styles.modal_footer}>
           <Button
-            icon={send_icon}
-            text={"Отправить"}
-            iconPosition={"end"}
+            icon={sendIcon}
+            text="Отправить"
+            iconPosition="end"
             onClick={handleSend}
             disabled={!messageText.trim()}
           />
