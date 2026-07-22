@@ -1,25 +1,27 @@
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 
-import styles from "./Content.module.css";
+import styles from './Content.module.css';
 
-import Title from "../Title/Title";
-import MessageList from "../MessageList/MessageList";
-import Button from "../Button/Button";
-import Modal from "../Modal/Modal";
+import Title from '../Title/Title';
+import MessageList from '../MessageList/MessageList';
+import MessageDetails from '../MessageDetails/MessageDetails';
+import Button from '../Button/Button';
+import Modal from '../Modal/Modal';
 
-import pencilIcon from "../../assets/icons/pencil.svg";
-import sendIcon from "../../assets/icons/send.svg";
+import pencilIcon from '../../assets/icons/pencil.svg';
+import sendIcon from '../../assets/icons/send.svg';
 
-import type { Message } from "../../types/message";
+import type { Message } from '../../types/message';
 
-import { createMessage, getMessages } from "../../services/messages";
-import { supabase } from "../../lib/supabase";
+import { createMessage, getMessages } from '../../services/messages';
+import { supabase } from '../../lib/supabase';
 
 const Content = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState("");
+  const [messageText, setMessageText] = useState('');
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -34,13 +36,13 @@ const Content = () => {
     loadMessages();
 
     const channel = supabase
-      .channel("messages")
+      .channel('messages')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
         },
         (payload) => {
           setMessages((previous) => [payload.new as Message, ...previous]);
@@ -61,7 +63,7 @@ const Content = () => {
     try {
       await createMessage(text);
 
-      setMessageText("");
+      setMessageText('');
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
@@ -76,7 +78,7 @@ const Content = () => {
           <br />о чём молчишь
         </Title>
 
-        <MessageList messages={messages} />
+        <MessageList messages={messages} onMessageClick={setSelectedMessage} />
       </motion.div>
 
       <motion.div
@@ -92,18 +94,25 @@ const Content = () => {
           className={styles.modal_textarea}
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
-          placeholder="Расскажи свои тайны..."
+          placeholder='Расскажи свои тайны...'
         />
 
         <div className={styles.modal_footer}>
           <Button
             icon={sendIcon}
-            text="Отправить"
-            iconPosition="end"
+            text='Отправить'
+            iconPosition='end'
             onClick={handleSend}
             disabled={!messageText.trim()}
           />
         </div>
+      </Modal>
+
+      <Modal
+        open={selectedMessage !== null}
+        onClose={() => setSelectedMessage(null)}
+      >
+        {selectedMessage && <MessageDetails message={selectedMessage} />}
       </Modal>
     </div>
   );

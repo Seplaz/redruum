@@ -5,13 +5,18 @@ import styles from './MessageList.module.css';
 
 type MessageListProps = {
   messages: Message[];
+  onMessageClick?: (message: Message) => void;
 };
 
-const MessageList = ({ messages }: MessageListProps) => {
+const MessageList = ({ messages, onMessageClick }: MessageListProps) => {
   return (
     <motion.div className={styles.message_list}>
       {messages.map((message) => (
-        <MessageCard key={message.id} message={message} />
+        <MessageCard
+          key={message.id}
+          message={message}
+          onClick={onMessageClick}
+        />
       ))}
     </motion.div>
   );
