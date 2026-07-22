@@ -3,6 +3,8 @@ import styles from './MessageForm.module.css';
 import Button from '../Button/Button';
 import sendIcon from '../../assets/icons/send.svg';
 
+const MAX_LENGTH = 1000;
+
 type MessageFormProps = {
   value: string;
   onChange: (value: string) => void;
@@ -22,6 +24,7 @@ const MessageForm = ({ value, onChange, onSubmit }: MessageFormProps) => {
         onChange={handleChange}
         placeholder='Написать...'
         autoFocus
+        maxLength={MAX_LENGTH}
       />
 
       <footer className={styles.footer}>

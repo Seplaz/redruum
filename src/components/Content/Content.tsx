@@ -17,6 +17,9 @@ import type { Message } from '../../types/message';
 import { createMessage, getMessages } from '../../services/messages';
 import { supabase } from '../../lib/supabase';
 
+const MIN_SEND_INTERVAL_MS = 20_000;
+const LAST_SEND_KEY = 'lastMessageSentAt';
+
 const Content = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,12 +60,20 @@ const Content = () => {
 
   const handleSend = async () => {
     const text = messageText.trim();
-
     if (!text) return;
+
+    const lastSendAt = Number(localStorage.getItem(LAST_SEND_KEY) || '0');
+    const now = Date.now();
+
+    if (now - lastSendAt < MIN_SEND_INTERVAL_MS) {
+      alert('Слишком часто отправляете сообщения, подождите 20 секунд.');
+      return;
+    }
 
     try {
       await createMessage(text);
 
+      localStorage.setItem(LAST_SEND_KEY, String(now));
       setMessageText('');
       setIsModalOpen(false);
     } catch (error) {
