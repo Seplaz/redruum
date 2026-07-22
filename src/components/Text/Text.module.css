@@ -1,0 +1,7 @@
+.text {
+  font-family: 'Inter Italic';
+  font-size: var(--font-size-s);
+  font-weight: 400;
+  inline-size: 100%;
+  block-size: min-content;
+}

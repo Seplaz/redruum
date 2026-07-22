@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import styles from './Content.module.css';
 
 import Title from '../Title/Title';
+import Text from '../Text/Text';
 import MessageList from '../MessageList/MessageList';
 import MessageDetails from '../MessageDetails/MessageDetails';
 import Button from '../Button/Button';
@@ -84,11 +85,13 @@ const Content = () => {
   return (
     <div className={styles.content}>
       <motion.div className={styles.messages}>
-        <Title>
-          Делись тем,
-          <br />о чём молчишь
-        </Title>
-
+        <div className={styles.title_container}>
+          <Title>
+            Делись тем,
+            <br />о чём молчишь
+          </Title>
+          <Text>Все сообщения исчезают спустя 7 дней.</Text>
+        </div>
         <MessageList messages={messages} onMessageClick={setSelectedMessage} />
       </motion.div>
 
