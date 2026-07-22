@@ -1,7 +1,7 @@
 {
   "name": "REDRUUM",
   "short_name": "REDRUUM",
-  "start_url": "/",
+  "start_url": "/redruum/",
   "display": "standalone",
   "background_color": "#8B0000",
   "theme_color": "#8B0000",
