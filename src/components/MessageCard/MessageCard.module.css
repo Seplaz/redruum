@@ -26,7 +26,7 @@
   color: var(--text-dark);
   font-family: "Inter Italic";
   font-weight: 700;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-m);
   /* background-color: var(--glass); */
 }
 
@@ -34,5 +34,5 @@
   padding: 6px;
   font-family: "Inter";
   font-weight: 400;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-m);
 }
