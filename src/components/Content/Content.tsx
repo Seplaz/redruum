@@ -1,30 +1,30 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
-import styles from './Content.module.css';
+import styles from "./Content.module.css";
 
-import Title from '../Title/Title';
-import Text from '../Text/Text';
-import MessageList from '../MessageList/MessageList';
-import MessageDetails from '../MessageDetails/MessageDetails';
-import Button from '../Button/Button';
-import Modal from '../Modal/Modal';
-import MessageForm from '../MessageForm/MessageForm';
+import Title from "../Title/Title";
+// import Text from "../Text/Text";
+import MessageList from "../MessageList/MessageList";
+import MessageDetails from "../MessageDetails/MessageDetails";
+import Button from "../Button/Button";
+import Modal from "../Modal/Modal";
+import MessageForm from "../MessageForm/MessageForm";
 
-import pencilIcon from '../../assets/icons/pencil.svg';
+import pencilIcon from "../../assets/icons/pencil.svg";
 
-import type { Message } from '../../types/message';
+import type { Message } from "../../types/message";
 
-import { createMessage, getMessages } from '../../services/messages';
-import { supabase } from '../../lib/supabase';
+import { createMessage, getMessages } from "../../services/messages";
+import { supabase } from "../../lib/supabase";
 
 const MIN_SEND_INTERVAL_MS = 20_000;
-const LAST_SEND_KEY = 'lastMessageSentAt';
+const LAST_SEND_KEY = "lastMessageSentAt";
 
 const Content = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
   useEffect(() => {
@@ -40,13 +40,13 @@ const Content = () => {
     loadMessages();
 
     const channel = supabase
-      .channel('messages')
+      .channel("messages")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
         },
         (payload) => {
           setMessages((previous) => [payload.new as Message, ...previous]);
@@ -63,11 +63,11 @@ const Content = () => {
     const text = messageText.trim();
     if (!text) return;
 
-    const lastSendAt = Number(localStorage.getItem(LAST_SEND_KEY) || '0');
+    const lastSendAt = Number(localStorage.getItem(LAST_SEND_KEY) || "0");
     const now = Date.now();
 
     if (now - lastSendAt < MIN_SEND_INTERVAL_MS) {
-      alert('Слишком часто отправляете сообщения, подождите 20 секунд.');
+      alert("Слишком часто отправляете сообщения, подождите 20 секунд.");
       return;
     }
 
@@ -75,7 +75,7 @@ const Content = () => {
       await createMessage(text);
 
       localStorage.setItem(LAST_SEND_KEY, String(now));
-      setMessageText('');
+      setMessageText("");
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
@@ -90,7 +90,7 @@ const Content = () => {
             Делись тем,
             <br />о чём молчишь
           </Title>
-          <Text>Все сообщения исчезают спустя 7 дней.</Text>
+          {/* <Text>Все сообщения исчезают спустя 7 дней.</Text> */}
         </div>
         <MessageList messages={messages} onMessageClick={setSelectedMessage} />
       </motion.div>

@@ -3,34 +3,36 @@
   flex-direction: column;
   justify-content: center;
   align-items: start;
-  gap: 6px;
+  /* gap: 6px; */
   border: 1px solid rgba(234, 229, 223, 0.25);
   border-radius: var(--border-radius-l);
-  padding: 16px;
+  padding: 12px;
+  box-shadow:
+    0 8px 24px rgba(10, 10, 10, 0.18),
+    inset 0 1px 0 rgba(234, 229, 223, 0.1);
   outline: none;
   color: var(--text-dark);
   background-color: var(--glass);
   backdrop-filter: blur(var(--blur));
   inline-size: fit-content;
-  box-shadow:
-    0 8px 24px rgba(10, 10, 10, 0.18),
-    inset 0 1px 0 rgba(234, 229, 223, 0.1);
 }
 
 .id {
   display: flex;
   justify-content: center;
+  padding: 6px;
   /* border-radius: var(--border-radius-l); */
   /* padding: 6px 12px; */
   color: var(--text-dark);
-  font-family: 'Inter Italic';
+  font-family: "Inter Italic";
   font-weight: 700;
-  font-size: var(--font-size-m);
+  font-size: var(--font-size-xs);
   /* background-color: var(--glass); */
 }
 
 .text {
-  font-family: 'Inter';
+  padding: 6px;
+  font-family: "Inter";
   font-weight: 400;
-  font-size: var(--font-size-m);
+  font-size: var(--font-size-xs);
 }
