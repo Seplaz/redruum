@@ -32,25 +32,3 @@
   bottom: 24px;
   z-index: 1;
 }
-
-.modal_textarea {
-  border: none;
-  outline: none;
-  color: var(--text-dark);
-  font-family: 'Inter';
-  font-size: var(--font-size-m);
-  background: none;
-  inline-size: 100%;
-  block-size: 100%;
-  resize: none;
-}
-
-.modal_textarea::placeholder {
-  color: var(--text-secondary);
-  font-family: 'Inter Italic';
-}
-
-.modal_footer {
-  display: flex;
-  justify-content: flex-end;
-}

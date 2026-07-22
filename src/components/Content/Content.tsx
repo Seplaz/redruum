@@ -8,9 +8,9 @@ import MessageList from '../MessageList/MessageList';
 import MessageDetails from '../MessageDetails/MessageDetails';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
+import MessageForm from '../MessageForm/MessageForm';
 
 import pencilIcon from '../../assets/icons/pencil.svg';
-import sendIcon from '../../assets/icons/send.svg';
 
 import type { Message } from '../../types/message';
 
@@ -90,22 +90,11 @@ const Content = () => {
       </motion.div>
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <textarea
-          className={styles.modal_textarea}
+        <MessageForm
           value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          placeholder='Расскажи свои тайны...'
+          onChange={setMessageText}
+          onSubmit={handleSend}
         />
-
-        <div className={styles.modal_footer}>
-          <Button
-            icon={sendIcon}
-            text='Отправить'
-            iconPosition='end'
-            onClick={handleSend}
-            disabled={!messageText.trim()}
-          />
-        </div>
       </Modal>
 
       <Modal
