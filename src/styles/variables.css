@@ -6,6 +6,7 @@
   --text-light: #eae5df;
   --text-secondary: rgba(10, 10, 10, 0.5);
   --glass: rgba(234, 229, 223, 0.75);
+  --glass-hover: rgba(234, 229, 223, 0.9);
 
   /* Effects */
   --blur: 24px;

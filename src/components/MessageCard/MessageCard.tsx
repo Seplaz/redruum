@@ -1,9 +1,9 @@
-import { motion } from 'motion/react';
+import { motion } from "motion/react";
 
-import type { Message } from '../../types/message';
+import type { Message } from "../../types/message";
 
-import styles from './MessageCard.module.css';
-import { transitions } from '../../animations/transitions';
+import styles from "./MessageCard.module.css";
+import { transitions } from "../../animations/transitions";
 
 type MessageCardProps = {
   message: Message;
@@ -37,6 +37,7 @@ const MessageCard = ({
         opacity: 1,
         y: 0,
       }}
+      whileTap={{ scale: 0.9 }}
       transition={{
         ...transitions.normal,
         delay: initial ? order * 0.06 : 0,
