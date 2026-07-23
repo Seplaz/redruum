@@ -12,9 +12,10 @@ type ModalProps = {
   onClose: () => void;
   title?: ReactNode;
   children: ReactNode;
+  footer?: ReactNode;
 };
 
-const Modal = ({ open, onClose, title, children }: ModalProps) => {
+const Modal = ({ open, onClose, title, children, footer }: ModalProps) => {
   const handleOverlayClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -40,6 +41,8 @@ const Modal = ({ open, onClose, title, children }: ModalProps) => {
             </header>
 
             <div className={styles.body}>{children}</div>
+
+            {footer && <footer className={styles.footer}>{footer}</footer>}
           </motion.div>
         </motion.div>
       )}

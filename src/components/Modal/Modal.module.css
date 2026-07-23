@@ -22,3 +22,8 @@
   block-size: 100%;
   padding: 12px;
 }
+
+.footer {
+  display: flex;
+  justify-content: end;
+}

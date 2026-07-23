@@ -11,6 +11,7 @@ import Modal from '../Modal/Modal';
 import MessageForm from '../MessageForm/MessageForm';
 
 import pencilIcon from '../../assets/icons/pencil.svg';
+import sendIcon from '../../assets/icons/send.svg';
 
 import type { Message } from '../../types/message';
 
@@ -109,12 +110,20 @@ const Content = () => {
         <Button icon={pencilIcon} onClick={() => setIsModalOpen(true)} />
       </motion.div>
 
-      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <MessageForm
-          value={messageText}
-          onChange={setMessageText}
-          onSubmit={handleSend}
-        />
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        footer={
+          <Button
+            icon={sendIcon}
+            text='Отправить'
+            iconPosition='end'
+            onClick={handleSend}
+            disabled={!messageText.trim()}
+          />
+        }
+      >
+        <MessageForm value={messageText} onChange={setMessageText} />
       </Modal>
 
       <Modal

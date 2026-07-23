@@ -1,17 +1,14 @@
 import type { ChangeEvent } from 'react';
 import styles from './MessageForm.module.css';
-import Button from '../Button/Button';
-import sendIcon from '../../assets/icons/send.svg';
 
 const MAX_LENGTH = 1000;
 
 type MessageFormProps = {
   value: string;
   onChange: (value: string) => void;
-  onSubmit: () => void;
 };
 
-const MessageForm = ({ value, onChange, onSubmit }: MessageFormProps) => {
+const MessageForm = ({ value, onChange }: MessageFormProps) => {
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     onChange(event.target.value);
   };
@@ -26,16 +23,6 @@ const MessageForm = ({ value, onChange, onSubmit }: MessageFormProps) => {
         autoFocus
         maxLength={MAX_LENGTH}
       />
-
-      <footer className={styles.footer}>
-        <Button
-          icon={sendIcon}
-          text='Отправить'
-          iconPosition='end'
-          onClick={onSubmit}
-          disabled={!value.trim()}
-        />
-      </footer>
     </div>
   );
 };
