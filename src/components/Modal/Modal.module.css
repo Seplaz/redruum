@@ -22,11 +22,11 @@
   block-size: 100%;
   padding: 12px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .footer {
-  position: sticky;
-  bottom: 0;
   display: flex;
   justify-content: end;
 }
