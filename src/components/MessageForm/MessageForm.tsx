@@ -22,7 +22,7 @@ const MessageForm = ({ value, onChange, onSubmit }: MessageFormProps) => {
         className={styles.textarea}
         value={value}
         onChange={handleChange}
-        placeholder='Написать...'
+        placeholder='Что хочется написать прямо сейчас?'
         autoFocus
         maxLength={MAX_LENGTH}
       />

@@ -4,5 +4,5 @@
   font-weight: 700;
   inline-size: 100%;
   block-size: min-content;
-  color: var(--text-secondary);
+  color: var(--text-dark);
 }
