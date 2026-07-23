@@ -10,7 +10,7 @@
   border: none;
   outline: none;
   color: var(--text-dark);
-  font-family: "Inter";
+  font-family: 'Inter';
   font-size: var(--font-size-m);
   background: none;
   inline-size: 100%;
@@ -20,7 +20,7 @@
 
 .textarea::placeholder {
   color: var(--text-secondary);
-  font-family: "Inter Italic";
+  font-family: 'Inter Italic';
 }
 
 .footer {

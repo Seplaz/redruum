@@ -5,7 +5,7 @@ import styles from './Content.module.css';
 
 import Title from '../Title/Title';
 import MessageList from '../MessageList/MessageList';
-import MessageDetails from '../MessageDetails/MessageDetails';
+import MessageThread from '../MessageThread/MessageThread';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import MessageForm from '../MessageForm/MessageForm';
@@ -94,7 +94,11 @@ const Content = () => {
             <br />о чём молчишь
           </Title>
         </div>
-        <MessageList messages={messages} onMessageClick={setSelectedMessage} newMessageId={newMessageId}/>
+        <MessageList
+          messages={messages}
+          onMessageClick={setSelectedMessage}
+          newMessageId={newMessageId}
+        />
       </motion.div>
 
       <motion.div
@@ -117,7 +121,7 @@ const Content = () => {
         open={selectedMessage !== null}
         onClose={() => setSelectedMessage(null)}
       >
-        {selectedMessage && <MessageDetails />}
+        {selectedMessage && <MessageThread />}
       </Modal>
     </div>
   );

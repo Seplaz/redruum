@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import Text from '../Text/Text';
 
-const MessageDetails = () => {
+const MessageThread = () => {
   return (
     <motion.div>
       <Text>{'4 Комментария'}</Text>
@@ -9,4 +9,4 @@ const MessageDetails = () => {
   );
 };
 
-export default MessageDetails;
+export default MessageThread;
