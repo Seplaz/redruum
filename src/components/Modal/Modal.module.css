@@ -20,4 +20,5 @@
   flex-direction: column;
   justify-content: space-between;
   block-size: 100%;
+  padding: 12px;
 }

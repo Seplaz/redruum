@@ -1,6 +1,6 @@
 .title {
   font-family: 'CoFo Kak Black';
-  font-size: var(--font-size-l);
+  font-size: var(--font-size-xl);
   inline-size: 100%;
   block-size: min-content;
 }

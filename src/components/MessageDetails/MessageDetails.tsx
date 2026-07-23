@@ -1,15 +1,11 @@
-import type { Message } from '../../types/message';
-import MessageCard from '../MessageCard/MessageCard';
+import { motion } from 'motion/react';
+import Text from '../Text/Text';
 
-type MessageDetailsProps = {
-  message: Message;
-};
-
-const MessageDetails = ({ message }: MessageDetailsProps) => {
+const MessageDetails = () => {
   return (
-    <>
-      <MessageCard message={message} />
-    </>
+    <motion.div>
+      <Text>{'4 Комментария'}</Text>
+    </motion.div>
   );
 };
 

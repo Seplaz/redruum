@@ -1,11 +1,11 @@
-import type { MouseEvent, ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import type { MouseEvent, ReactNode } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 
-import styles from "./Modal.module.css";
-import { transitions } from "../../animations/transitions";
+import styles from './Modal.module.css';
+import { transitions } from '../../animations/transitions';
 
-import Button from "../Button/Button";
-import closeIcon from "../../assets/icons/arrow_left.svg";
+import Button from '../Button/Button';
+import closeIcon from '../../assets/icons/arrow_left.svg';
 
 type ModalProps = {
   open: boolean;
@@ -30,10 +30,11 @@ const Modal = ({ open, onClose, title, children }: ModalProps) => {
             onClick={(event) => event.stopPropagation()}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={transitions.normal}
           >
             <header className={styles.header}>
-              <Button icon={closeIcon} text="Назад" onClick={onClose} />
+              <Button icon={closeIcon} text='Назад' onClick={onClose} />
 
               {title && <div className={styles.title}>{title}</div>}
             </header>

@@ -14,8 +14,8 @@ const MessageCard = ({ message, onClick }: MessageCardProps) => {
       className={styles.card}
       onClick={() => onClick?.(message)}
       layout
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: -24 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={transitions.normal}
     >
       <span className={styles.id}>#{message.id}</span>
