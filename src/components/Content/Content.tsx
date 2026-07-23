@@ -25,6 +25,7 @@ const Content = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [newMessageId, setNewMessageId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -47,8 +48,11 @@ const Content = () => {
           schema: 'public',
           table: 'messages',
         },
-        (payload) => {
-          setMessages((previous) => [payload.new as Message, ...previous]);
+        ({ new: message }) => {
+          const newMessage = message as Message;
+
+          setMessages((previous) => [newMessage, ...previous]);
+          setNewMessageId(newMessage.id);
         },
       )
       .subscribe();
@@ -90,7 +94,7 @@ const Content = () => {
             <br />о чём молчишь
           </Title>
         </div>
-        <MessageList messages={messages} onMessageClick={setSelectedMessage} />
+        <MessageList messages={messages} onMessageClick={setSelectedMessage} newMessageId={newMessageId}/>
       </motion.div>
 
       <motion.div
