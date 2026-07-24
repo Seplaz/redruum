@@ -1,18 +1,9 @@
 .app {
   display: grid;
   grid-template-rows: min-content 1fr min-content;
-  /* background-image is applied after first paint to improve FCP */
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-color: #0a0a0a; /* low-cost placeholder while image loads */
+  background-image: url(./assets/images/background.webp);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   block-size: 100dvb;
-}
-
-.hasBg {
-  background-image: url(./assets/images/background.webp);
-  transition: background-image 200ms linear;
 }
