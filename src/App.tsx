@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import styles from './App.module.css';
 import Header from './components/Header/Header';
 import Content from './components/Content/Content';
@@ -23,14 +23,42 @@ const AnalyticsLoader = lazy(async () => {
 });
 
 const App = () => {
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showBg, setShowBg] = useState(false);
+
+  useEffect(() => {
+    // Defer analytics and non-critical background image until the browser is idle
+    if (typeof window === 'undefined') return;
+
+    if ('requestIdleCallback' in window) {
+      const idA = (window as any).requestIdleCallback(() =>
+        setShowAnalytics(true),
+      );
+      const idB = (window as any).requestIdleCallback(() => setShowBg(true));
+      return () => {
+        (window as any).cancelIdleCallback(idA);
+        (window as any).cancelIdleCallback(idB);
+      };
+    }
+
+    const tA = setTimeout(() => setShowAnalytics(true), 3000);
+    const tB = setTimeout(() => setShowBg(true), 1000);
+    return () => {
+      clearTimeout(tA);
+      clearTimeout(tB);
+    };
+  }, []);
+
   return (
-    <div className={styles.app}>
+    <div className={`${styles.app} ${showBg ? styles.hasBg : ''}`}>
       <Header />
       <Content />
       <Footer />
-      <Suspense fallback={null}>
-        <AnalyticsLoader />
-      </Suspense>
+      {showAnalytics && (
+        <Suspense fallback={null}>
+          <AnalyticsLoader />
+        </Suspense>
+      )}
     </div>
   );
 };
