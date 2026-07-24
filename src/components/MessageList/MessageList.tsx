@@ -1,6 +1,6 @@
-import MessageCard from '../MessageCard/MessageCard';
-import type { Message } from '../../types/message';
-import styles from './MessageList.module.css';
+import MessageCard from "../MessageCard/MessageCard";
+import type { Message } from "../../types/message";
+import styles from "./MessageList.module.css";
 
 type MessageListProps = {
   messages: Message[];
@@ -8,7 +8,7 @@ type MessageListProps = {
   onMessageClick?: (message: Message) => void;
 };
 
-const INITIAL_ANIMATED_COUNT = 8;
+const INITIAL_ANIMATED_COUNT = 10;
 
 const MessageList = ({
   messages,

@@ -1,7 +1,9 @@
-import { motion } from 'motion/react';
-import type { Message } from '../../types/message';
-import styles from './MessageCard.module.css';
-import { transitions } from '../../animations/transitions';
+import { motion } from "motion/react";
+import type { Message } from "../../types/message";
+import styles from "./MessageCard.module.css";
+import { transitions } from "../../animations/transitions";
+import Meta from "../Meta/Meta";
+import commentIcon from "../../assets/icons/comments.svg";
 
 type MessageCardProps = {
   message: Message;
@@ -55,6 +57,9 @@ const MessageCard = ({
       )}
       <span className={styles.id}>#{message.id}</span>
       <p className={styles.text}>{message.text}</p>
+      <div className={styles.meta}>
+        <Meta icon={commentIcon} value={2} />
+      </div>
     </motion.article>
   );
 };

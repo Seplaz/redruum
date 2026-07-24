@@ -1,30 +1,30 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
-import styles from './Content.module.css';
+import styles from "./Content.module.css";
 
-import Title from '../Title/Title';
-import MessageList from '../MessageList/MessageList';
-import MessageThread from '../MessageThread/MessageThread';
-import Button from '../Button/Button';
-import Modal from '../Modal/Modal';
-import MessageForm from '../MessageForm/MessageForm';
+import Title from "../Title/Title";
+import MessageList from "../MessageList/MessageList";
+import MessageThread from "../MessageThread/MessageThread";
+import Button from "../Button/Button";
+import Modal from "../Modal/Modal";
+import MessageForm from "../MessageForm/MessageForm";
 
-import pencilIcon from '../../assets/icons/pencil.svg';
-import sendIcon from '../../assets/icons/send.svg';
+import pencilIcon from "../../assets/icons/pencil.svg";
+import sendIcon from "../../assets/icons/send.svg";
 
-import type { Message } from '../../types/message';
+import type { Message } from "../../types/message";
 
-import { createMessage, getMessages } from '../../services/messages';
-import { supabase } from '../../lib/supabase';
+import { createMessage, getMessages } from "../../services/messages";
+import { supabase } from "../../lib/supabase";
 
 const MIN_SEND_INTERVAL_MS = 20_000;
-const LAST_SEND_KEY = 'lastMessageSentAt';
+const LAST_SEND_KEY = "lastMessageSentAt";
 
 const Content = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [newMessageId, setNewMessageId] = useState<number | null>(null);
 
@@ -41,13 +41,13 @@ const Content = () => {
     loadMessages();
 
     const channel = supabase
-      .channel('messages')
+      .channel("messages")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
         },
         ({ new: message }) => {
           const newMessage = message as Message;
@@ -67,11 +67,11 @@ const Content = () => {
     const text = messageText.trim();
     if (!text) return;
 
-    const lastSendAt = Number(localStorage.getItem(LAST_SEND_KEY) || '0');
+    const lastSendAt = Number(localStorage.getItem(LAST_SEND_KEY) || "0");
     const now = Date.now();
 
     if (now - lastSendAt < MIN_SEND_INTERVAL_MS) {
-      alert('Слишком часто отправляете сообщения, подождите 20 секунд.');
+      alert("Слишком часто отправляете сообщения, подождите 20 секунд.");
       return;
     }
 
@@ -79,7 +79,7 @@ const Content = () => {
       await createMessage(text);
 
       localStorage.setItem(LAST_SEND_KEY, String(now));
-      setMessageText('');
+      setMessageText("");
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
@@ -116,8 +116,8 @@ const Content = () => {
         footer={
           <Button
             icon={sendIcon}
-            text='Отправить'
-            iconPosition='end'
+            text="Отправить"
+            iconPosition="end"
             onClick={handleSend}
             disabled={!messageText.trim()}
           />

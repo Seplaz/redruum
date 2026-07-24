@@ -1,0 +1,15 @@
+.meta {
+  display: flex;
+  gap: 6px;
+}
+
+.icon {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.value {
+  font-family: 'Inter';
+  font-size: var(--font-size-s);
+  color: var(--font-dark);
+}

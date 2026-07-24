@@ -21,13 +21,10 @@
   display: flex;
   justify-content: center;
   padding: 6px;
-  /* border-radius: var(--border-radius-l); */
-  /* padding: 6px 12px; */
   color: var(--text-dark);
   font-family: "Inter Italic";
   font-weight: 700;
   font-size: var(--font-size-m);
-  /* background-color: var(--glass); */
 }
 
 .text {
@@ -35,4 +32,9 @@
   font-family: "Inter";
   font-weight: 400;
   font-size: var(--font-size-m);
+}
+
+.meta {
+  padding: 6px;
+  align-self: flex-end;
 }
