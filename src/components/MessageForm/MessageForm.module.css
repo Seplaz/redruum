@@ -3,7 +3,6 @@
   flex-direction: column;
   justify-content: space-between;
   block-size: 100%;
-  min-block-size: 0;
 }
 
 .textarea {
