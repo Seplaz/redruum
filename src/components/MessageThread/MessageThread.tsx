@@ -1,12 +1,7 @@
-import { motion } from 'motion/react';
-import Text from '../Text/Text';
+import { motion } from "motion/react";
 
 const MessageThread = () => {
-  return (
-    <motion.div>
-      <Text>{'4 Комментария'}</Text>
-    </motion.div>
-  );
+  return <motion.div></motion.div>;
 };
 
 export default MessageThread;
