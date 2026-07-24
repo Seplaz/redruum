@@ -1,9 +1,7 @@
-import { motion } from "motion/react";
-
-import type { Message } from "../../types/message";
-
-import styles from "./MessageCard.module.css";
-import { transitions } from "../../animations/transitions";
+import { motion } from 'motion/react';
+import type { Message } from '../../types/message';
+import styles from './MessageCard.module.css';
+import { transitions } from '../../animations/transitions';
 
 type MessageCardProps = {
   message: Message;
@@ -36,30 +34,26 @@ const MessageCard = ({
       animate={{
         opacity: 1,
         y: 0,
+        transition: {
+          ...transitions.normal,
+          delay: initial ? order * 0.06 : 0,
+        },
       }}
-      whileTap={{ scale: 0.9 }}
-      transition={{
-        ...transitions.normal,
-        delay: initial ? order * 0.06 : 0,
+      whileTap={{
+        scale: 0.9,
+        transition: transitions.normal,
       }}
+      transition={transitions.normal}
     >
       {isNew && (
         <motion.div
           layoutId={`new-${message.id}`}
-          initial={{
-            opacity: 0,
-            scale: 0.95,
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={transitions.normal}
         />
       )}
-
       <span className={styles.id}>#{message.id}</span>
-
       <p className={styles.text}>{message.text}</p>
     </motion.article>
   );
