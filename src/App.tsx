@@ -1,13 +1,14 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import styles from './App.module.css';
-import Header from './components/Header/Header';
-import Content from './components/Content/Content';
-import Footer from './components/Footer/Footer';
+import { Suspense, lazy, useEffect, useState } from "react";
+import styles from "./App.module.css";
+import Header from "./components/Header/Header";
+import Content from "./components/Content/Content";
+import Footer from "./components/Footer/Footer";
+import Background from "./components/Background/Background";
 
 const AnalyticsLoader = lazy(async () => {
   const [{ Analytics }, { SpeedInsights }] = await Promise.all([
-    import('@vercel/analytics/react'),
-    import('@vercel/speed-insights/react'),
+    import("@vercel/analytics/react"),
+    import("@vercel/speed-insights/react"),
   ]);
 
   return {
@@ -24,32 +25,22 @@ const AnalyticsLoader = lazy(async () => {
 
 const App = () => {
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const [showBg, setShowBg] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    if ('requestIdleCallback' in window) {
-      const idA = (window as any).requestIdleCallback(() =>
-        setShowAnalytics(true),
-      );
-      const idB = (window as any).requestIdleCallback(() => setShowBg(true));
-      return () => {
-        (window as any).cancelIdleCallback(idA);
-        (window as any).cancelIdleCallback(idB);
-      };
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(() => setShowAnalytics(true));
+      return () => window.cancelIdleCallback(id);
     }
 
-    const tA = setTimeout(() => setShowAnalytics(true), 3000);
-    const tB = setTimeout(() => setShowBg(true), 1000);
-    return () => {
-      clearTimeout(tA);
-      clearTimeout(tB);
-    };
+    const t = setTimeout(() => setShowAnalytics(true), 3000);
+    return () => clearTimeout(t);
   }, []);
 
   return (
-    <div className={`${styles.app} ${showBg ? styles.hasBg : ''}`}>
+    <div className={styles.app}>
+      <Background />
       <Header />
       <Content />
       <Footer />
