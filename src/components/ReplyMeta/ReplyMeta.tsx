@@ -10,7 +10,7 @@ const ReplyMeta = ({ value }: ReplyMetaProps) => {
     <div className={styles.meta}>
       <p className={styles.value}>{value}</p>
       <p className={styles.text}>
-        {pluralize(value, "ответ", "ответа", "ответов")}
+        {pluralize(value, "Ответ", "Ответа", "Ответов")}
       </p>
     </div>
   );

@@ -7,12 +7,14 @@
 .textarea {
   border: none;
   outline: none;
-  overflow: hidden;
+  overflow-y: auto;
   color: var(--text-dark);
   font-family: "Inter";
   font-size: var(--font-size-m);
   line-height: 1.5;
   background: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   inline-size: 100%;
   resize: none;
   min-block-size: 24px;
