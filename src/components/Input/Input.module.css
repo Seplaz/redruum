@@ -4,27 +4,27 @@
   gap: 6px;
 }
 
-.textarea {
+.field {
   border: none;
   outline: none;
-  background: none;
+  overflow: hidden;
   color: var(--text-dark);
   font-family: "Inter";
   font-size: var(--font-size-m);
+  line-height: 1.5;
+  background: none;
   inline-size: 100%;
   resize: none;
-  overflow: hidden;
-  line-height: 1.5;
 }
 
-.textarea::placeholder {
+.field::placeholder {
   color: var(--text-secondary);
   font-family: "Inter Italic";
 }
 
 .counter {
   align-self: flex-end;
+  color: var(--text-secondary);
   font-family: "Inter";
   font-size: var(--font-size-xs);
-  color: var(--text-secondary);
 }

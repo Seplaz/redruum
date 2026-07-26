@@ -54,7 +54,7 @@ const Input = ({
     <div className={styles.input}>
       {multiline ? (
         <TextareaAutosize
-          className={styles.textarea}
+          className={styles.field}
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
@@ -67,7 +67,7 @@ const Input = ({
         />
       ) : (
         <input
-          className={styles.textarea}
+          className={styles.field}
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
