@@ -1,0 +1,15 @@
+.meta {
+  display: flex;
+  gap: 6px;
+  font-family: "Inter";
+  justify-content: center;
+  align-items: center;
+}
+
+.value {
+  font-size: var(--font-size-s);
+}
+
+.text {
+  font-size: var(--font-size-s);
+}

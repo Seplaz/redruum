@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import type { Message } from "../../types/message";
 import styles from "./MessageCard.module.css";
 import { transitions } from "../../animations/transitions";
+import ReplyMeta from "../ReplyMeta/ReplyMeta";
 
 type MessageCardProps = {
   message: Message;
@@ -55,6 +56,9 @@ const MessageCard = ({
       )}
       <span className={styles.id}>#{message.id}</span>
       <p className={styles.text}>{message.text}</p>
+      <div className={styles.meta}>
+        <ReplyMeta value={3} />
+      </div>
     </motion.article>
   );
 };

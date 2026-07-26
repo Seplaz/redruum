@@ -4,26 +4,3 @@
   justify-content: space-between;
   block-size: 100%;
 }
-
-.textarea {
-  border: none;
-  outline: none;
-  color: var(--text-dark);
-  font-family: "Inter";
-  font-size: var(--font-size-m);
-  background: none;
-  inline-size: 100%;
-  block-size: 100%;
-  resize: none;
-}
-
-.textarea::placeholder {
-  color: var(--text-secondary);
-  font-family: "Inter Italic";
-}
-
-.counter {
-  align-self: flex-end;
-  font-size: var(--font-size-s, 12px);
-  color: var(--text-secondary);
-}

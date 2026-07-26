@@ -1,0 +1,29 @@
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.textarea {
+  border: none;
+  outline: none;
+  color: var(--text-dark);
+  font-family: "Inter";
+  font-size: var(--font-size-m);
+  background: none;
+  inline-size: 100%;
+  block-size: 100%;
+  resize: none;
+}
+
+.textarea::placeholder {
+  color: var(--text-secondary);
+  font-family: "Inter Italic";
+}
+
+.counter {
+  align-self: flex-end;
+  font-family: "Inter";
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}

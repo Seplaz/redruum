@@ -15,6 +15,7 @@
   background-color: var(--glass);
   backdrop-filter: blur(var(--blur));
   inline-size: fit-content;
+  min-inline-size: 200px;
 }
 
 .id {
@@ -32,4 +33,9 @@
   font-family: "Inter";
   font-weight: 400;
   font-size: var(--font-size-m);
+}
+
+.meta {
+  align-self: flex-end;
+  padding: 6px;
 }
