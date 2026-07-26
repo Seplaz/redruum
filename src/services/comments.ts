@@ -5,7 +5,7 @@ export const getAllComments = async (): Promise<Comment[]> => {
   const { data, error } = await supabase
     .from("comments")
     .select("*")
-    .order("created_at");
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw error;
