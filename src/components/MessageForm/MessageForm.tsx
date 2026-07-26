@@ -1,7 +1,7 @@
 import styles from "./MessageForm.module.css";
 import Input from "../Input/Input";
 
-const MAX_LENGTH = 1000;
+const MAX_LENGTH = 200;
 
 type MessageFormProps = {
   value: string;
