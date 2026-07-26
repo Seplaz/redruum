@@ -12,11 +12,28 @@ type MessageThreadProps = {
 };
 
 const INITIAL_ANIMATED_COUNT = 10;
+const MESSAGE_ANIMATION_DELAY = 0;
+const COMMENTS_START_DELAY = 0.2;
+const COMMENT_STEP_DELAY = 0.06;
 
 const MessageThread = ({ message, comments }: MessageThreadProps) => {
   return (
     <div className={styles.thread}>
-      <p className={styles.message}>{message.text}</p>
+      <motion.p
+        className={styles.message}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          transition: {
+            ...transitions.normal,
+            delay: MESSAGE_ANIMATION_DELAY,
+          },
+        }}
+      >
+        {message.text}
+      </motion.p>
+
       <div className={styles.comments}>
         {comments.map((comment, index) => {
           const initial = index < INITIAL_ANIMATED_COUNT;
@@ -39,7 +56,9 @@ const MessageThread = ({ message, comments }: MessageThreadProps) => {
                 y: 0,
                 transition: {
                   ...transitions.normal,
-                  delay: initial ? index * 0.06 : 0,
+                  delay: initial
+                    ? COMMENTS_START_DELAY + index * COMMENT_STEP_DELAY
+                    : 0,
                 },
               }}
               transition={transitions.normal}
