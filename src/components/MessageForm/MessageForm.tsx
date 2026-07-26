@@ -1,5 +1,5 @@
-import type { ChangeEvent } from 'react';
-import styles from './MessageForm.module.css';
+import type { ChangeEvent } from "react";
+import styles from "./MessageForm.module.css";
 
 const MAX_LENGTH = 1000;
 
@@ -19,10 +19,15 @@ const MessageForm = ({ value, onChange }: MessageFormProps) => {
         className={styles.textarea}
         value={value}
         onChange={handleChange}
-        placeholder='Что хочется написать прямо сейчас?'
+        placeholder="Что хочется написать прямо сейчас?"
         autoFocus
         maxLength={MAX_LENGTH}
+        inputMode="text"
+        enterKeyHint="send"
       />
+      <span className={styles.counter}>
+        {value.length}/{MAX_LENGTH}
+      </span>
     </div>
   );
 };

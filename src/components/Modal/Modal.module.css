@@ -8,6 +8,7 @@
   padding: 24px;
   background-color: var(--glass);
   backdrop-filter: blur(var(--blur));
+  block-size: 100dvb;
 }
 
 .header {

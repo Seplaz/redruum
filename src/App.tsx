@@ -27,7 +27,6 @@ const App = () => {
   const [showBg, setShowBg] = useState(false);
 
   useEffect(() => {
-    // Defer analytics and non-critical background image until the browser is idle
     if (typeof window === 'undefined') return;
 
     if ('requestIdleCallback' in window) {
