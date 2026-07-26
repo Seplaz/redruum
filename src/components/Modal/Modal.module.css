@@ -14,25 +14,25 @@
 
 .header {
   display: flex;
-  justify-content: flex-start;
   flex: 0 0 auto;
+  justify-content: flex-start;
 }
 
 .body {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  min-block-size: 0;
-  padding: 12px;
   gap: 24px;
+  padding: 12px;
+  min-block-size: 0;
 }
 
 .footer {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
   align-items: stretch;
   gap: 24px;
-  flex: 0 0 auto;
 }
 
 .footer > button {
