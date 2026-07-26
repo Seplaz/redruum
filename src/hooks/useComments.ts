@@ -45,7 +45,7 @@ export const useComments = () => {
             const list = previous[newComment.message_id] ?? [];
             return {
               ...previous,
-              [newComment.message_id]: [newComment, ...list],
+              [newComment.message_id]: [...list, newComment],
             };
           });
         },

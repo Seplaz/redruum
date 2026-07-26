@@ -5,7 +5,7 @@ export const getAllComments = async (): Promise<Comment[]> => {
   const { data, error } = await supabase
     .from("comments")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at");
 
   if (error) {
     throw error;
@@ -13,7 +13,6 @@ export const getAllComments = async (): Promise<Comment[]> => {
 
   return data;
 };
-
 export const createComment = async (messageId: number, text: string) => {
   const { error } = await supabase.from("comments").insert({
     message_id: messageId,
