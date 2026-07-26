@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react";
+import { useLayoutEffect, useRef, type ChangeEvent } from "react";
 import styles from "./Input.module.css";
 
 type InputProps = {
@@ -42,16 +42,26 @@ const Input = ({
   inputMode = "text",
   enterKeyHint = "done",
 }: InputProps) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     onChange(event.target.value);
   };
 
+  useLayoutEffect(() => {
+    if (!multiline || !textareaRef.current) return;
+
+    textareaRef.current.style.height = "0px";
+    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+  }, [value, multiline]);
+
   return (
     <div className={styles.input}>
       {multiline ? (
         <textarea
+          ref={textareaRef}
           className={styles.textarea}
           value={value}
           onChange={handleChange}
@@ -60,6 +70,7 @@ const Input = ({
           maxLength={maxLength}
           inputMode={inputMode}
           enterKeyHint={enterKeyHint}
+          rows={1}
         />
       ) : (
         <input
