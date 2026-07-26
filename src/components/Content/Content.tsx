@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 
 import styles from "./Content.module.css";
@@ -16,17 +16,31 @@ import sendIcon from "../../assets/icons/send.svg";
 import type { Message } from "../../types/message";
 
 import { createMessage, getMessages } from "../../services/messages";
+import { createComment } from "../../services/comments";
 import { supabase } from "../../lib/supabase";
+import { useComments } from "../../hooks/useComments";
 
 const MIN_SEND_INTERVAL_MS = 20_000;
 const LAST_SEND_KEY = "lastMessageSentAt";
 
 const Content = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
+
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [commentText, setCommentText] = useState("");
+
   const [newMessageId, setNewMessageId] = useState<number | null>(null);
+
+  const commentsByMessage = useComments();
+
+  const commentCounts = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(commentsByMessage).map(([id, list]) => [id, list.length]),
+    );
+  }, [commentsByMessage]);
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -63,7 +77,7 @@ const Content = () => {
     };
   }, []);
 
-  const handleSend = async () => {
+  const handleSendMessage = async () => {
     const text = messageText.trim();
     if (!text) return;
 
@@ -86,6 +100,25 @@ const Content = () => {
     }
   };
 
+  const handleSendComment = async () => {
+    if (!selectedMessage) return;
+
+    const text = commentText.trim();
+    if (!text) return;
+
+    try {
+      await createComment(selectedMessage.id, text);
+      setCommentText("");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCloseThread = () => {
+    setSelectedMessage(null);
+    setCommentText("");
+  };
+
   return (
     <div className={styles.content}>
       <motion.div className={styles.messages}>
@@ -99,6 +132,7 @@ const Content = () => {
           messages={messages}
           onMessageClick={setSelectedMessage}
           newMessageId={newMessageId}
+          commentCounts={commentCounts}
         />
       </motion.div>
 
@@ -118,7 +152,7 @@ const Content = () => {
             icon={sendIcon}
             text="Отправить"
             iconPosition="end"
-            onClick={handleSend}
+            onClick={handleSendMessage}
             disabled={!messageText.trim()}
           />
         }
@@ -128,9 +162,26 @@ const Content = () => {
 
       <Modal
         open={selectedMessage !== null}
-        onClose={() => setSelectedMessage(null)}
+        onClose={handleCloseThread}
+        footer={
+          <Button
+            icon={sendIcon}
+            text="Отправить"
+            iconPosition="end"
+            onClick={handleSendComment}
+            disabled={!commentText.trim()}
+          />
+        }
       >
-        {selectedMessage && <MessageThread />}
+        {selectedMessage && (
+          <>
+            <MessageThread
+              message={selectedMessage}
+              comments={commentsByMessage[selectedMessage.id] ?? []}
+            />
+            <MessageForm value={commentText} onChange={setCommentText} />
+          </>
+        )}
       </Modal>
     </div>
   );

@@ -1,11 +1,10 @@
 import { supabase } from "../lib/supabase";
 import type { Comment } from "../types/comment";
 
-export const getComments = async (messageId: number): Promise<Comment[]> => {
+export const getAllComments = async (): Promise<Comment[]> => {
   const { data, error } = await supabase
     .from("comments")
     .select("*")
-    .eq("message_id", messageId)
     .order("created_at");
 
   if (error) {

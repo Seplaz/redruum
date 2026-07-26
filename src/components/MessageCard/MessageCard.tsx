@@ -9,6 +9,7 @@ type MessageCardProps = {
   order: number;
   initial: boolean;
   isNew: boolean;
+  commentsCount: number;
   onClick?: (message: Message) => void;
 };
 
@@ -17,6 +18,7 @@ const MessageCard = ({
   order,
   initial,
   isNew,
+  commentsCount,
   onClick,
 }: MessageCardProps) => {
   return (
@@ -57,7 +59,7 @@ const MessageCard = ({
       <span className={styles.id}>#{message.id}</span>
       <p className={styles.text}>{message.text}</p>
       <div className={styles.meta}>
-        <ReplyMeta value={3} />
+        <ReplyMeta value={commentsCount} />
       </div>
     </motion.article>
   );
