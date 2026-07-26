@@ -25,9 +25,6 @@
   min-block-size: 0;
   padding: 12px;
   gap: 24px;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
 .footer {
