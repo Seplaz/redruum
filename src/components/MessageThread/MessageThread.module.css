@@ -5,11 +5,11 @@
 }
 
 .message {
-  padding: 12px;
   outline: none;
   color: var(--text-dark);
   font-family: "Inter";
-  font-size: var(--font-size-l);
+  font-weight: 700;
+  font-size: var(--font-size-m);
   word-break: break-word;
   white-space: pre-wrap;
   inline-size: 100%;
@@ -21,19 +21,23 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  border: 1px solid rgba(234, 229, 223, 0.25);
+  border-radius: var(--border-radius-l);
+  padding: 12px;
+  overflow-y: auto;
+  background-color: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .comment {
-  border: 1px solid rgba(234, 229, 223, 0.25);
-  border-radius: var(--border-radius-l);
-  padding: 12px 20px;
+  padding: 12px;
   outline: none;
   color: var(--text-dark);
   font-family: "Inter";
   font-size: var(--font-size-m);
   word-break: break-word;
-  background-color: var(--glass);
-  backdrop-filter: blur(var(--blur));
   white-space: pre-wrap;
   white-space: pre-wrap;
   inline-size: 100%;

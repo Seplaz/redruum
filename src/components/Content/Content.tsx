@@ -148,39 +148,47 @@ const Content = () => {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         footer={
-          <Button
-            icon={sendIcon}
-            text="Отправить"
-            iconPosition="end"
-            onClick={handleSendMessage}
-            disabled={!messageText.trim()}
-          />
+          <>
+            <MessageForm value={messageText} onChange={setMessageText} />
+            <Button
+              icon={sendIcon}
+              text="Отправить"
+              iconPosition="end"
+              onClick={handleSendMessage}
+              disabled={!messageText.trim()}
+            />
+          </>
         }
-      >
-        <MessageForm value={messageText} onChange={setMessageText} />
-      </Modal>
+      />
 
       <Modal
         open={selectedMessage !== null}
         onClose={handleCloseThread}
         footer={
-          <Button
-            icon={sendIcon}
-            text="Отправить"
-            iconPosition="end"
-            onClick={handleSendComment}
-            disabled={!commentText.trim()}
-          />
+          selectedMessage && (
+            <>
+              <MessageForm
+                value={commentText}
+                onChange={setCommentText}
+                placeholder="Написать комментарий..."
+                autoFocus={false}
+              />
+              <Button
+                icon={sendIcon}
+                text="Отправить"
+                iconPosition="end"
+                onClick={handleSendComment}
+                disabled={!commentText.trim()}
+              />
+            </>
+          )
         }
       >
         {selectedMessage && (
-          <>
-            <MessageThread
-              message={selectedMessage}
-              comments={commentsByMessage[selectedMessage.id] ?? []}
-            />
-            <MessageForm value={commentText} onChange={setCommentText} />
-          </>
+          <MessageThread
+            message={selectedMessage}
+            comments={commentsByMessage[selectedMessage.id] ?? []}
+          />
         )}
       </Modal>
     </div>

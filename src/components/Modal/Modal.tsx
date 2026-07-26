@@ -1,17 +1,17 @@
-import type { MouseEvent, ReactNode } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import type { MouseEvent, ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
-import styles from './Modal.module.css';
-import { transitions } from '../../animations/transitions';
+import styles from "./Modal.module.css";
+import { transitions } from "../../animations/transitions";
 
-import Button from '../Button/Button';
-import closeIcon from '../../assets/icons/arrow_left.svg';
+import Button from "../Button/Button";
+import closeIcon from "../../assets/icons/arrow_left.svg";
 
 type ModalProps = {
   open: boolean;
   onClose: () => void;
   title?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
   footer?: ReactNode;
 };
 
@@ -21,6 +21,8 @@ const Modal = ({ open, onClose, title, children, footer }: ModalProps) => {
       onClose();
     }
   };
+
+  const hasBody = Boolean(children);
 
   return (
     <AnimatePresence>
@@ -35,14 +37,21 @@ const Modal = ({ open, onClose, title, children, footer }: ModalProps) => {
             transition={transitions.normal}
           >
             <header className={styles.header}>
-              <Button icon={closeIcon} text='Назад' onClick={onClose} />
-
+              <Button icon={closeIcon} text="Назад" onClick={onClose} />
               {title && <div className={styles.title}>{title}</div>}
             </header>
 
-            <div className={styles.body}>{children}</div>
+            {hasBody && <div className={styles.body}>{children}</div>}
 
-            {footer && <footer className={styles.footer}>{footer}</footer>}
+            {footer && (
+              <footer
+                className={`${styles.footer} ${
+                  hasBody ? "" : styles.footer_expanded
+                }`}
+              >
+                {footer}
+              </footer>
+            )}
           </motion.div>
         </motion.div>
       )}
