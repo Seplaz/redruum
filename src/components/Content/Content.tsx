@@ -81,7 +81,7 @@ const Content = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [showStatus]);
 
   const handleSendMessage = async () => {
     const text = messageText.trim();
