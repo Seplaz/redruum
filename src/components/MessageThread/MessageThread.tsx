@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
-import { motion } from "motion/react";
+import { useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 
-import styles from "./MessageThread.module.css";
-import { transitions } from "../../animations/transitions";
+import styles from './MessageThread.module.css';
+import { transitions } from '../../animations/transitions';
 
-import type { Message } from "../../types/message";
-import type { Comment } from "../../types/comment";
+import type { Message } from '../../types/message';
+import type { Comment } from '../../types/comment';
 
 type MessageThreadProps = {
   message: Message;
@@ -18,18 +18,33 @@ const COMMENT_STEP_DELAY = 0.06;
 
 const MessageThread = ({ message, comments }: MessageThreadProps) => {
   const commentsRef = useRef<HTMLDivElement>(null);
+
+  // Первый рендер компонента
   const isFirstRender = useRef(true);
+
+  // Количество комментариев на предыдущем рендере
+  const previousCommentsCount = useRef(comments.length);
 
   useEffect(() => {
     const container = commentsRef.current;
     if (!container) return;
 
-    container.scrollTo({
-      top: container.scrollHeight,
-      behavior: isFirstRender.current ? "auto" : "smooth",
-    });
+    // При первом открытии ничего не делаем.
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      previousCommentsCount.current = comments.length;
+      return;
+    }
 
-    isFirstRender.current = false;
+    // Если появился новый комментарий — плавно едем вниз.
+    if (comments.length > previousCommentsCount.current) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+
+    previousCommentsCount.current = comments.length;
   }, [comments.length]);
 
   return (
@@ -37,7 +52,11 @@ const MessageThread = ({ message, comments }: MessageThreadProps) => {
       <motion.p
         className={styles.message}
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0, transition: transitions.normal }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          transition: transitions.normal,
+        }}
       >
         {message.text}
       </motion.p>

@@ -1,5 +1,10 @@
-import styles from "./MessageForm.module.css";
-import Input from "../Input/Input";
+import { useMemo } from 'react';
+
+import styles from './MessageForm.module.css';
+import Input from '../Input/Input';
+
+import { messagePlaceholders } from '../../constants/placeholders';
+import { getRandomItem } from '../../utils/getRandomItem';
 
 const MAX_LENGTH = 200;
 
@@ -13,9 +18,14 @@ type MessageFormProps = {
 const MessageForm = ({
   value,
   onChange,
-  placeholder = "Что хочется написать прямо сейчас?",
+  placeholder,
   autoFocus = true,
 }: MessageFormProps) => {
+  const randomPlaceholder = useMemo(
+    () => placeholder ?? getRandomItem(messagePlaceholders),
+    [placeholder],
+  );
+
   return (
     <div className={styles.form}>
       <Input
@@ -24,9 +34,9 @@ const MessageForm = ({
         multiline
         autoFocus={autoFocus}
         maxLength={MAX_LENGTH}
-        placeholder={placeholder}
-        inputMode="text"
-        enterKeyHint="send"
+        placeholder={randomPlaceholder}
+        inputMode='text'
+        enterKeyHint='send'
       />
     </div>
   );
