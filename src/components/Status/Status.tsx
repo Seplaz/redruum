@@ -1,28 +1,27 @@
-import { AnimatePresence, motion } from 'motion/react';
-import { useEffect } from 'react';
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect } from "react";
 
-import styles from './Status.module.css';
-import { transitions } from '../../animations/transitions';
+import styles from "./Status.module.css";
+import { transitions } from "../../animations/transitions";
 
-export type StatusType = 'success' | 'info' | 'error';
+import type { StatusType } from "../../types/status";
 
 type StatusProps = {
   open: boolean;
   text: string;
-  type?: StatusType;
+  type: StatusType;
+  duration: number;
   onClose: () => void;
 };
 
-const AUTO_CLOSE_DELAY = 4000;
-
-const Status = ({ open, text, type = 'info', onClose }: StatusProps) => {
+const Status = ({ open, text, type, duration, onClose }: StatusProps) => {
   useEffect(() => {
     if (!open) return;
 
-    const timeout = setTimeout(onClose, AUTO_CLOSE_DELAY);
+    const timeout = setTimeout(onClose, duration);
 
     return () => clearTimeout(timeout);
-  }, [open, onClose]);
+  }, [open, duration, onClose]);
 
   return (
     <AnimatePresence>

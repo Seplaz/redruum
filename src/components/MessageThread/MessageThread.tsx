@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import { useEffect, useRef } from "react";
+import { motion } from "motion/react";
 
-import styles from './MessageThread.module.css';
-import { transitions } from '../../animations/transitions';
+import styles from "./MessageThread.module.css";
+import { transitions } from "../../animations/transitions";
 
-import type { Message } from '../../types/message';
-import type { Comment } from '../../types/comment';
+import type { Message } from "../../types/message";
+import type { Comment } from "../../types/comment";
 
 type MessageThreadProps = {
   message: Message;
@@ -40,7 +40,7 @@ const MessageThread = ({ message, comments }: MessageThreadProps) => {
     if (comments.length > previousCommentsCount.current) {
       container.scrollTo({
         top: container.scrollHeight,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
 

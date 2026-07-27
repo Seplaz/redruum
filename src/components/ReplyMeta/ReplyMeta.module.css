@@ -1,9 +1,9 @@
 .meta {
   display: flex;
-  gap: 6px;
-  font-family: "Inter";
   justify-content: center;
   align-items: center;
+  gap: 6px;
+  font-family: "Inter";
 }
 
 .value {

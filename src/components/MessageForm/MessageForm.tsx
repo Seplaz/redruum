@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import styles from './MessageForm.module.css';
-import Input from '../Input/Input';
+import styles from "./MessageForm.module.css";
+import Input from "../Input/Input";
 
-import { messagePlaceholders } from '../../constants/placeholders';
-import { getRandomItem } from '../../utils/getRandomItem';
+import { messagePlaceholders } from "../../constants/placeholders";
+import { getRandomItem } from "../../utils/getRandomItem";
 
 const MAX_LENGTH = 200;
 
@@ -35,8 +35,8 @@ const MessageForm = ({
         autoFocus={autoFocus}
         maxLength={MAX_LENGTH}
         placeholder={randomPlaceholder}
-        inputMode='text'
-        enterKeyHint='send'
+        inputMode="text"
+        enterKeyHint="send"
       />
     </div>
   );

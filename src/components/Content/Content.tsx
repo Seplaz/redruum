@@ -1,40 +1,47 @@
-import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'motion/react';
+import { useEffect, useMemo, useState } from "react";
+import { motion } from "motion/react";
 
-import styles from './Content.module.css';
+import styles from "./Content.module.css";
 
-import Title from '../Title/Title';
-import MessageList from '../MessageList/MessageList';
-import MessageThread from '../MessageThread/MessageThread';
-import Button from '../Button/Button';
-import Modal from '../Modal/Modal';
-import MessageForm from '../MessageForm/MessageForm';
+import Title from "../Title/Title";
+import MessageList from "../MessageList/MessageList";
+import MessageThread from "../MessageThread/MessageThread";
+import Button from "../Button/Button";
+import Modal from "../Modal/Modal";
+import MessageForm from "../MessageForm/MessageForm";
 
-import pencilIcon from '../../assets/icons/pencil.svg';
-import sendIcon from '../../assets/icons/send.svg';
+import pencilIcon from "../../assets/icons/pencil.svg";
+import sendIcon from "../../assets/icons/send.svg";
 
-import type { Message } from '../../types/message';
+import type { Message } from "../../types/message";
 
-import { createMessage, getMessages } from '../../services/messages';
-import { createComment } from '../../services/comments';
-import { supabase } from '../../lib/supabase';
-import { useComments } from '../../hooks/useComments';
+import { createMessage, getMessages } from "../../services/messages";
+import { createComment } from "../../services/comments";
+import { supabase } from "../../lib/supabase";
+import { useComments } from "../../hooks/useComments";
 
-import Status from '../Status/Status';
-import { useStatus } from '../../hooks/useStatus';
-import { getErrorMessage } from '../../utils/getErrorMessage';
+import Status from "../Status/Status";
+import { useStatus } from "../../hooks/useStatus";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+import { checkSendCooldown, markSent } from "../../utils/checkSendCooldown";
 
 const MIN_SEND_INTERVAL_MS = 20_000;
-const LAST_SEND_KEY = 'lastMessageSentAt';
+const LAST_MESSAGE_SENT_KEY = "lastMessageSentAt";
+const LAST_COMMENT_SENT_KEY = "lastCommentSentAt";
+const COOLDOWN_STATUS_DURATION = 4000;
+
+const getCooldownText = (seconds: number) => {
+  return `Не так быстро. Подождите ${seconds} сек.`;
+};
 
 const Content = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState("");
 
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [commentText, setCommentText] = useState('');
+  const [commentText, setCommentText] = useState("");
 
   const [newMessageId, setNewMessageId] = useState<number | null>(null);
 
@@ -61,13 +68,13 @@ const Content = () => {
     loadMessages();
 
     const channel = supabase
-      .channel('messages')
+      .channel("messages")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
         },
         ({ new: message }) => {
           const newMessage = message as Message;
@@ -87,19 +94,25 @@ const Content = () => {
     const text = messageText.trim();
     if (!text) return;
 
-    const lastSendAt = Number(localStorage.getItem(LAST_SEND_KEY) || '0');
-    const now = Date.now();
+    const remainingSeconds = checkSendCooldown(
+      LAST_MESSAGE_SENT_KEY,
+      MIN_SEND_INTERVAL_MS,
+    );
 
-    if (now - lastSendAt < MIN_SEND_INTERVAL_MS) {
-      showStatus('Слишком часто отправляете сообщения, подождите 20 секунд.');
+    if (remainingSeconds > 0) {
+      showStatus(
+        getCooldownText(remainingSeconds),
+        "info",
+        COOLDOWN_STATUS_DURATION,
+      );
       return;
     }
 
     try {
       await createMessage(text);
 
-      localStorage.setItem(LAST_SEND_KEY, String(now));
-      setMessageText('');
+      markSent(LAST_MESSAGE_SENT_KEY);
+      setMessageText("");
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
@@ -113,9 +126,25 @@ const Content = () => {
     const text = commentText.trim();
     if (!text) return;
 
+    const remainingSeconds = checkSendCooldown(
+      LAST_COMMENT_SENT_KEY,
+      MIN_SEND_INTERVAL_MS,
+    );
+
+    if (remainingSeconds > 0) {
+      showStatus(
+        getCooldownText(remainingSeconds),
+        "info",
+        COOLDOWN_STATUS_DURATION,
+      );
+      return;
+    }
+
     try {
       await createComment(selectedMessage.id, text);
-      setCommentText('');
+
+      markSent(LAST_COMMENT_SENT_KEY);
+      setCommentText("");
     } catch (error) {
       console.error(error);
       showStatus(getErrorMessage(error));
@@ -124,7 +153,7 @@ const Content = () => {
 
   const handleCloseThread = () => {
     setSelectedMessage(null);
-    setCommentText('');
+    setCommentText("");
   };
 
   return (
@@ -160,8 +189,8 @@ const Content = () => {
             <MessageForm value={messageText} onChange={setMessageText} />
             <Button
               icon={sendIcon}
-              text='Отправить'
-              iconPosition='end'
+              text="Отправить"
+              iconPosition="end"
               onClick={handleSendMessage}
               disabled={!messageText.trim()}
             />
@@ -178,13 +207,13 @@ const Content = () => {
               <MessageForm
                 value={commentText}
                 onChange={setCommentText}
-                placeholder='Ответить...'
+                placeholder="Ответить..."
                 autoFocus={false}
               />
               <Button
                 icon={sendIcon}
-                text='Отправить'
-                iconPosition='end'
+                text="Отправить"
+                iconPosition="end"
                 onClick={handleSendComment}
                 disabled={!commentText.trim()}
               />
@@ -200,7 +229,13 @@ const Content = () => {
         )}
       </Modal>
 
-      <Status open={status.open} text={status.text} onClose={hideStatus} />
+      <Status
+        open={status.open}
+        text={status.text}
+        type={status.type}
+        duration={status.duration}
+        onClose={hideStatus}
+      />
     </div>
   );
 };

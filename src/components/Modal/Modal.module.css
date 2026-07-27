@@ -15,8 +15,8 @@
 @media (min-width: 768px) {
   .modal {
     inset: 24px 0;
-    block-size: calc(100% - 48px);
     border-radius: var(--border-radius-l);
+    block-size: calc(100% - 48px);
   }
 }
 

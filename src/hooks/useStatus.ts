@@ -1,22 +1,28 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-type StatusState = {
-  open: boolean;
-  text: string;
-};
+import type { StatusState, StatusType } from "../types/status";
+
+const DEFAULT_DURATION = 4000;
 
 export const useStatus = () => {
   const [status, setStatus] = useState<StatusState>({
     open: false,
-    text: '',
+    text: "",
+    type: "info",
+    duration: DEFAULT_DURATION,
   });
 
-  const showStatus = useCallback((text: string) => {
-    setStatus({
-      open: true,
-      text,
-    });
-  }, []);
+  const showStatus = useCallback(
+    (text: string, type: StatusType = "info", duration = DEFAULT_DURATION) => {
+      setStatus({
+        open: true,
+        text,
+        type,
+        duration,
+      });
+    },
+    [],
+  );
 
   const hideStatus = useCallback(() => {
     setStatus((previous) => ({

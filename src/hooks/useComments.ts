@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import type { Comment } from '../types/comment';
-import { getAllComments } from '../services/comments';
-import { supabase } from '../lib/supabase';
-import { getErrorMessage } from '../utils/getErrorMessage';
+import { useEffect, useState } from "react";
+import type { Comment } from "../types/comment";
+import { getAllComments } from "../services/comments";
+import { supabase } from "../lib/supabase";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 type CommentsByMessage = Record<number, Comment[]>;
 
@@ -32,13 +32,13 @@ export const useComments = (onError?: (text: string) => void) => {
     loadComments();
 
     const channel = supabase
-      .channel('comments')
+      .channel("comments")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'comments',
+          event: "INSERT",
+          schema: "public",
+          table: "comments",
         },
         ({ new: comment }) => {
           const newComment = comment as Comment;
