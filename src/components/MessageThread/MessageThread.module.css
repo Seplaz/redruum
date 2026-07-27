@@ -10,7 +10,7 @@
   flex: 0 0 auto;
   outline: none;
   color: var(--text-dark);
-  font-family: "Inter";
+  font-family: 'Inter';
   font-weight: 700;
   font-size: var(--font-size-m);
   word-break: break-word;
@@ -18,6 +18,10 @@
   inline-size: 100%;
   min-inline-size: 200px;
   max-inline-size: 100%;
+  /* background-color: var(--glass); */
+  /* backdrop-filter: blur(var(--blur)); */
+  /* padding: 12px 20px; */
+  /* border-radius: var(--border-radius-m); */
 }
 
 .comments {
@@ -33,11 +37,11 @@
 .comment {
   flex: 0 0 auto;
   border: 1px solid rgba(234, 229, 223, 0.25);
-  border-radius: 999px;
+  border-radius: var(--border-radius-m);
   padding: 12px;
   outline: none;
   color: var(--text-dark);
-  font-family: "Inter";
+  font-family: 'Inter';
   font-size: var(--font-size-s);
   word-break: break-word;
   background-color: var(--glass);

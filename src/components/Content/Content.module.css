@@ -4,6 +4,9 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  inline-size: 100%;
+  max-inline-size: 768px;
+  margin: 0 auto;
 }
 
 .messages {
