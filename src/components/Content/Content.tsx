@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "motion/react";
 
 import styles from "./Content.module.css";
@@ -26,33 +27,49 @@ import { getErrorMessage } from "../../utils/getErrorMessage";
 import { checkSendCooldown, markSent } from "../../utils/checkSendCooldown";
 
 const MIN_SEND_INTERVAL_MS = 20_000;
+
 const LAST_MESSAGE_SENT_KEY = "lastMessageSentAt";
 const LAST_COMMENT_SENT_KEY = "lastCommentSentAt";
+
 const COOLDOWN_STATUS_DURATION = 4000;
 
-const getCooldownText = (seconds: number) => {
-  return `Не так быстро. Подождите ${seconds} сек.`;
-};
+const getCooldownText = (seconds: number) =>
+  `Не так быстро. Подождите ${seconds} сек.`;
 
 const Content = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isMessagesLoaded, setIsMessagesLoaded] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
 
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [commentText, setCommentText] = useState("");
 
   const [newMessageId, setNewMessageId] = useState<number | null>(null);
 
   const { status, showStatus, hideStatus } = useStatus();
+
   const commentsByMessage = useComments(showStatus);
 
   const commentCounts = useMemo(() => {
     return Object.fromEntries(
-      Object.entries(commentsByMessage).map(([id, list]) => [id, list.length]),
+      Object.entries(commentsByMessage).map(([messageId, list]) => [
+        messageId,
+        list.length,
+      ]),
     );
   }, [commentsByMessage]);
+
+  const selectedMessage = useMemo(() => {
+    if (!id) return null;
+
+    const numericId = Number(id);
+
+    return messages.find((message) => message.id === numericId) ?? null;
+  }, [id, messages]);
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -61,7 +78,9 @@ const Content = () => {
         setMessages(data);
       } catch (error) {
         console.error(error);
-        showStatus(getErrorMessage(error));
+        showStatus(getErrorMessage(error), "error");
+      } finally {
+        setIsMessagesLoaded(true);
       }
     };
 
@@ -90,8 +109,21 @@ const Content = () => {
     };
   }, [showStatus]);
 
+  useEffect(() => {
+    if (!id) return;
+
+    if (!isMessagesLoaded) return;
+
+    if (!selectedMessage) {
+      navigate("/404", {
+        replace: true,
+      });
+    }
+  }, [id, isMessagesLoaded, selectedMessage, navigate]);
+
   const handleSendMessage = async () => {
     const text = messageText.trim();
+
     if (!text) return;
 
     const remainingSeconds = checkSendCooldown(
@@ -112,11 +144,14 @@ const Content = () => {
       await createMessage(text);
 
       markSent(LAST_MESSAGE_SENT_KEY);
+
       setMessageText("");
       setIsModalOpen(false);
+
+      showStatus("Сообщение отправлено.", "success");
     } catch (error) {
       console.error(error);
-      showStatus(getErrorMessage(error));
+      showStatus(getErrorMessage(error), "error");
     }
   };
 
@@ -124,6 +159,7 @@ const Content = () => {
     if (!selectedMessage) return;
 
     const text = commentText.trim();
+
     if (!text) return;
 
     const remainingSeconds = checkSendCooldown(
@@ -144,16 +180,23 @@ const Content = () => {
       await createComment(selectedMessage.id, text);
 
       markSent(LAST_COMMENT_SENT_KEY);
+
       setCommentText("");
+
+      showStatus("Ответ отправлен.", "success");
     } catch (error) {
       console.error(error);
-      showStatus(getErrorMessage(error));
+      showStatus(getErrorMessage(error), "error");
     }
   };
 
+  const handleOpenThread = (message: Message) => {
+    navigate(`/messages/${message.id}`);
+  };
+
   const handleCloseThread = () => {
-    setSelectedMessage(null);
     setCommentText("");
+    navigate("/");
   };
 
   return (
@@ -165,9 +208,10 @@ const Content = () => {
             <br />о чём молчишь
           </Title>
         </div>
+
         <MessageList
           messages={messages}
-          onMessageClick={setSelectedMessage}
+          onMessageClick={handleOpenThread}
           newMessageId={newMessageId}
           commentCounts={commentCounts}
         />
@@ -175,8 +219,14 @@ const Content = () => {
 
       <motion.div
         className={styles.write_button}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{
+          opacity: 0,
+          scale: 0,
+        }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+        }}
       >
         <Button icon={pencilIcon} onClick={() => setIsModalOpen(true)} />
       </motion.div>
@@ -187,6 +237,7 @@ const Content = () => {
         footer={
           <>
             <MessageForm value={messageText} onChange={setMessageText} />
+
             <Button
               icon={sendIcon}
               text="Отправить"
@@ -210,6 +261,7 @@ const Content = () => {
                 placeholder="Ответить..."
                 autoFocus={false}
               />
+
               <Button
                 icon={sendIcon}
                 text="Отправить"

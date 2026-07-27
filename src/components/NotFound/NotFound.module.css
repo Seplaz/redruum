@@ -1,0 +1,22 @@
+/* NotFound.module.css */
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.title {
+  font-family: "CoFo Kak Black";
+  font-size: 96px;
+  color: var(--text-light);
+}
+
+.text {
+  font-family: "CoFo Kak Black";
+  font-size: 24px;
+  color: var(--text-light);
+}
