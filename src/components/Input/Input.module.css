@@ -12,9 +12,8 @@
   outline: none;
   overflow: hidden;
   color: var(--text-dark);
-  font-family: "Inter";
-  font-size: var(--font-size-s);
-  line-height: 1.5;
+  font-family: 'Inter';
+  font-size: var(--font-size-m);
   background: none;
   inline-size: 100%;
   resize: none;
@@ -22,12 +21,12 @@
 
 .field::placeholder {
   color: var(--text-secondary);
-  font-family: "Inter Italic";
+  font-family: 'Inter Italic';
 }
 
 .counter {
   align-self: flex-end;
   color: var(--text-secondary);
-  font-family: "Inter";
+  font-family: 'Inter';
   font-size: var(--font-size-xs);
 }
