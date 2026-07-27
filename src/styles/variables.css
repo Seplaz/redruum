@@ -2,11 +2,23 @@
   /* Colors */
   --bg: #0a0a0a;
   --surface: #eae5df;
+
   --text-dark: #0a0a0a;
   --text-light: #eae5df;
   --text-secondary: rgba(10, 10, 10, 0.5);
+
   --glass: rgba(234, 229, 223, 0.75);
   --glass-hover: rgba(234, 229, 223, 0.9);
+
+  /* Status */
+
+  --status-success-bg: rgba(216, 239, 223, 0.85);
+  --status-info-bg: rgba(234, 229, 223, 0.85);
+  --status-error-bg: rgba(255, 220, 220, 0.85);
+
+  --status-success-accent: #4f9d69;
+  --status-info-accent: #7a6e68;
+  --status-error-accent: #b90a16;
 
   /* Effects */
   --blur: 24px;

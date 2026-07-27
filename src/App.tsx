@@ -1,14 +1,15 @@
-import { Suspense, lazy, useEffect, useState } from "react";
-import styles from "./App.module.css";
-import Header from "./components/Header/Header";
-import Content from "./components/Content/Content";
-import Footer from "./components/Footer/Footer";
-import Background from "./components/Background/Background";
+import { Suspense, lazy, useEffect, useState } from 'react';
+import styles from './App.module.css';
+import Header from './components/Header/Header';
+import Content from './components/Content/Content';
+import Footer from './components/Footer/Footer';
+import Background from './components/Background/Background';
+// import Status from './components/Status/Status';
 
 const AnalyticsLoader = lazy(async () => {
   const [{ Analytics }, { SpeedInsights }] = await Promise.all([
-    import("@vercel/analytics/react"),
-    import("@vercel/speed-insights/react"),
+    import('@vercel/analytics/react'),
+    import('@vercel/speed-insights/react'),
   ]);
 
   return {
@@ -27,9 +28,9 @@ const App = () => {
   const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
-    if ("requestIdleCallback" in window) {
+    if ('requestIdleCallback' in window) {
       const id = window.requestIdleCallback(() => setShowAnalytics(true));
       return () => window.cancelIdleCallback(id);
     }
@@ -44,6 +45,13 @@ const App = () => {
       <Header />
       <Content />
       <Footer />
+      {/* {import.meta.env.DEV && (
+        <Status
+          open={true}
+          text='Preview: статус (dev only)'
+          onClose={() => {}}
+        />
+      )} */}
       {showAnalytics && (
         <Suspense fallback={null}>
           <AnalyticsLoader />

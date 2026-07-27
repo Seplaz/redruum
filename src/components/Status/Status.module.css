@@ -1,22 +1,48 @@
 .status {
   position: fixed;
-  inset-block-start: 20px;
-  inset-inline: 24px;
+  inset-block-start: calc(64px + 24px);
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: fit-content;
+  max-inline-size: calc(100vw - 32px);
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-block-size: 52px;
-  padding: 0 20px;
-  border-radius: 999px;
+  padding: 12px 20px;
+  border-radius: var(--border-radius-l);
+  border: 1px solid rgba(234, 229, 223, 0.25);
   font-family: 'Inter';
   font-size: var(--font-size-s);
-  padding: 12px;
+  color: var(--text-dark);
   box-shadow:
     0 8px 24px rgba(10, 10, 10, 0.18),
     inset 0 1px 0 rgba(234, 229, 223, 0.1);
-  outline: none;
-  background-color: var(--glass);
   backdrop-filter: blur(var(--blur));
   pointer-events: none;
+  overflow: hidden;
+}
+
+.success {
+  background: var(--status-success-bg);
+}
+
+.success::before {
+  background: var(--status-success-accent);
+}
+
+.info {
+  background: var(--status-info-bg);
+}
+
+.info::before {
+  background: var(--status-info-accent);
+}
+
+.error {
+  background: var(--status-error-bg);
+}
+
+.error::before {
+  background: var(--status-error-accent);
 }
