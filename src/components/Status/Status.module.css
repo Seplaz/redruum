@@ -1,0 +1,22 @@
+.status {
+  position: fixed;
+  inset-block-start: 20px;
+  inset-inline: 24px;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-block-size: 52px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-family: 'Inter';
+  font-size: var(--font-size-s);
+  padding: 12px;
+  box-shadow:
+    0 8px 24px rgba(10, 10, 10, 0.18),
+    inset 0 1px 0 rgba(234, 229, 223, 0.1);
+  outline: none;
+  background-color: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  pointer-events: none;
+}

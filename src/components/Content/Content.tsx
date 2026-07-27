@@ -20,6 +20,10 @@ import { createComment } from '../../services/comments';
 import { supabase } from '../../lib/supabase';
 import { useComments } from '../../hooks/useComments';
 
+import Status from '../Status/Status';
+import { useStatus } from '../../hooks/useStatus';
+import { getErrorMessage } from '../../utils/getErrorMessage';
+
 const MIN_SEND_INTERVAL_MS = 20_000;
 const LAST_SEND_KEY = 'lastMessageSentAt';
 
@@ -34,7 +38,8 @@ const Content = () => {
 
   const [newMessageId, setNewMessageId] = useState<number | null>(null);
 
-  const commentsByMessage = useComments();
+  const { status, showStatus, hideStatus } = useStatus();
+  const commentsByMessage = useComments(showStatus);
 
   const commentCounts = useMemo(() => {
     return Object.fromEntries(
@@ -49,6 +54,7 @@ const Content = () => {
         setMessages(data);
       } catch (error) {
         console.error(error);
+        showStatus(getErrorMessage(error));
       }
     };
 
@@ -85,7 +91,7 @@ const Content = () => {
     const now = Date.now();
 
     if (now - lastSendAt < MIN_SEND_INTERVAL_MS) {
-      alert('Слишком часто отправляете сообщения, подождите 20 секунд.');
+      showStatus('Слишком часто отправляете сообщения, подождите 20 секунд.');
       return;
     }
 
@@ -97,6 +103,7 @@ const Content = () => {
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
+      showStatus(getErrorMessage(error));
     }
   };
 
@@ -111,6 +118,7 @@ const Content = () => {
       setCommentText('');
     } catch (error) {
       console.error(error);
+      showStatus(getErrorMessage(error));
     }
   };
 
@@ -191,6 +199,8 @@ const Content = () => {
           />
         )}
       </Modal>
+
+      <Status open={status.open} text={status.text} onClose={hideStatus} />
     </div>
   );
 };
