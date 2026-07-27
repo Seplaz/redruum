@@ -9,8 +9,8 @@ import Background from "./components/Background/Background";
 import Content from "./components/Content/Content";
 import NotFound from "./components/NotFound/NotFound";
 
-import defaultBackground from "./assets/images/background.webp";
-import notFoundBackground from "./assets/images/404.webp";
+import defaultBackground from "./assets/images/background-main-mobile.webp";
+import notFoundBackground from "./assets/images/background-404-mobile.webp";
 
 const AnalyticsLoader = lazy(async () => {
   const [{ Analytics }, { SpeedInsights }] = await Promise.all([
