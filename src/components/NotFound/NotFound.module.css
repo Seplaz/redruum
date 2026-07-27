@@ -17,6 +17,14 @@
 
 .text {
   font-family: "CoFo Kak Black";
-  font-size: 24px;
+  font-size: var(--font-size-l);
   color: var(--text-light);
+}
+
+.link {
+  font-family: "Inter";
+  font-size: var(--font-size-m);
+  font-weight: 700;
+  color: var(--text-light);
+  text-underline-offset: 6px;
 }
