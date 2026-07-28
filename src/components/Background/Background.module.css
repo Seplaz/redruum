@@ -1,16 +1,19 @@
 .background {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: -1;
-  width: 100%;
-  height: 100%;
+  pointer-events: none;
+}
+
+.background img {
+  inline-size: 100%;
+  block-size: 100%;
   object-fit: cover;
   object-position: top;
   opacity: 0;
   transition: opacity 200ms linear;
-  pointer-events: none;
 }
 
-.loaded {
+.background img.loaded {
   opacity: 1;
 }

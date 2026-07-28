@@ -1,28 +1,33 @@
-import { useState } from "react";
-import styles from "./Background.module.css";
+import { useState } from 'react';
+
+import styles from './Background.module.css';
 
 type BackgroundProps = {
-  image: string;
+  mobile: string;
+  tablet: string;
+  desktop: string;
 };
 
-const BackgroundImage = ({ image }: BackgroundProps) => {
+const Background = ({ mobile, tablet, desktop }: BackgroundProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <img
-      src={image}
-      alt=""
-      aria-hidden="true"
-      fetchPriority="high"
-      decoding="async"
-      onLoad={() => setIsLoaded(true)}
-      className={`${styles.background} ${isLoaded ? styles.loaded : ""}`}
-    />
-  );
-};
+    <picture className={styles.background}>
+      <source media='(min-width: 1024px)' srcSet={desktop} />
 
-const Background = ({ image }: BackgroundProps) => {
-  return <BackgroundImage key={image} image={image} />;
+      <source media='(min-width: 768px)' srcSet={tablet} />
+
+      <img
+        src={mobile}
+        alt=''
+        aria-hidden='true'
+        fetchPriority='high'
+        decoding='async'
+        onLoad={() => setIsLoaded(true)}
+        className={isLoaded ? styles.loaded : ''}
+      />
+    </picture>
+  );
 };
 
 export default Background;
