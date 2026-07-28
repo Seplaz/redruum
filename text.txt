@@ -1,0 +1,992 @@
+Подробно проанализируй код ещё раз, и скажи, почему не загружается количество комментариев
+ и не показывается в компоненте `MessageCard` через `ReplyMeta`?
+
+Это случилось сразу после того, как была введена пагинация.
+
+services:
+1. `comments.ts`:
+```
+import { supabase } from '../lib/supabase';
+import type { Comment } from '../types/comment';
+
+export const COMMENTS_PAGE_SIZE = 20;
+
+export const getComments = async (
+  messageId: number,
+  cursor?: string,
+): Promise<{
+  comments: Comment[];
+  nextCursor: string | null;
+}> => {
+  let query = supabase
+    .from('comments')
+    .select('*')
+    .eq('message_id', messageId)
+    .order('created_at', {
+      ascending: true,
+    })
+    .limit(COMMENTS_PAGE_SIZE);
+
+  if (cursor) {
+    query = query.gt('created_at', cursor);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  const nextCursor =
+    data.length === COMMENTS_PAGE_SIZE
+      ? data[data.length - 1].created_at
+      : null;
+
+  return {
+    comments: data,
+    nextCursor,
+  };
+};
+
+export const createComment = async (messageId: number, text: string) => {
+  const { error } = await supabase.from('comments').insert({
+    message_id: messageId,
+    text,
+  });
+
+  if (error) {
+    throw error;
+  }
+};
+```
+
+2. `messages.ts`:
+```
+import { supabase } from '../lib/supabase';
+import type { Message } from '../types/message';
+
+export const MESSAGES_PAGE_SIZE = 20;
+
+export const getMessages = async (
+  cursor?: string,
+): Promise<{
+  messages: Message[];
+  nextCursor: string | null;
+}> => {
+  let query = supabase
+    .from('messages')
+    .select('*')
+    .order('created_at', {
+      ascending: false,
+    })
+    .limit(MESSAGES_PAGE_SIZE);
+
+  if (cursor) {
+    query = query.lt('created_at', cursor);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  const nextCursor =
+    data.length === MESSAGES_PAGE_SIZE
+      ? data[data.length - 1].created_at
+      : null;
+
+  return {
+    messages: data,
+    nextCursor,
+  };
+};
+
+export const createMessage = async (text: string) => {
+  const { error } = await supabase.from('messages').insert({
+    text,
+  });
+
+  if (error) {
+    throw error;
+  }
+};
+
+export const getMessageById = async (id: number): Promise<Message | null> => {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+```
+
+types:
+1. `message.ts`:
+```
+export type Message = {
+  id: number;
+  text: string;
+  created_at: string;
+  comments_count: number;
+};
+```
+
+2. `comment.ts`:
+```
+export type Comment = {
+  id: number;
+  message_id: number;
+  text: string;
+  created_at: string;
+};
+```
+
+hooks:
+1. `useMessages.ts`:
+```
+import { useCallback, useEffect, useState } from 'react';
+
+import type { Message } from '../types/message';
+import { MESSAGES_PAGE_SIZE, getMessages } from '../services/messages';
+import { supabase } from '../lib/supabase';
+import { getErrorMessage } from '../utils/getErrorMessage';
+
+export const useMessages = (onError?: (text: string) => void) => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [newMessageId, setNewMessageId] = useState<number | null>(null);
+
+  const loadMessages = useCallback(
+    async (reset = false) => {
+      if (loading) return;
+      if (!reset && !hasMore) return;
+
+      setLoading(true);
+
+      try {
+        const { messages: data, nextCursor: cursor } = await getMessages(
+          reset ? undefined : (nextCursor ?? undefined),
+        );
+
+        setMessages((previous) => (reset ? data : [...previous, ...data]));
+        setNextCursor(cursor);
+        setHasMore(data.length === MESSAGES_PAGE_SIZE);
+      } catch (error) {
+        console.error(error);
+        onError?.(getErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [nextCursor, hasMore, loading, onError],
+  );
+
+  // Первичная загрузка при монтировании: отдельная функция, не переиспользующая
+  // loadMessages, чтобы единственным исполняемым до setState действием был await.
+  useEffect(() => {
+    let isCancelled = false;
+
+    const fetchInitial = async () => {
+      try {
+        const { messages: data, nextCursor: cursor } = await getMessages();
+
+        if (isCancelled) return;
+
+        setMessages(data);
+        setNextCursor(cursor);
+        setHasMore(data.length === MESSAGES_PAGE_SIZE);
+      } catch (error) {
+        if (isCancelled) return;
+
+        console.error(error);
+        onError?.(getErrorMessage(error));
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchInitial();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [onError]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        ({ new: message }) => {
+          const newMessage = message as Message;
+          setMessages((previous) => [newMessage, ...previous]);
+          setNewMessageId(newMessage.id);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  return {
+    messages,
+    loading,
+    hasMore,
+    loadMore: () => loadMessages(false),
+    newMessageId,
+  };
+};
+```
+
+2. `useComments.ts`:
+```
+import { useCallback, useEffect, useState } from 'react';
+
+import type { Comment } from '../types/comment';
+
+import { COMMENTS_PAGE_SIZE, getComments } from '../services/comments';
+
+import { supabase } from '../lib/supabase';
+
+import { getErrorMessage } from '../utils/getErrorMessage';
+
+export const useComments = (
+  messageId: number | null,
+  onError?: (text: string) => void,
+) => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(messageId !== null);
+  const [hasMore, setHasMore] = useState(true);
+
+  // Сброс состояния при смене messageId — во время рендера,
+  // а не в эффекте (официальный паттерн React для "reset on prop change").
+  const [trackedMessageId, setTrackedMessageId] = useState(messageId);
+
+  if (trackedMessageId !== messageId) {
+    setTrackedMessageId(messageId);
+    setComments([]);
+    setNextCursor(null);
+    setHasMore(true);
+    setLoading(messageId !== null);
+  }
+
+  const loadComments = useCallback(
+    async (reset = false) => {
+      if (!messageId) return;
+      if (loading) return;
+      if (!reset && !hasMore) return;
+
+      setLoading(true);
+
+      try {
+        const { comments: data, nextCursor: cursor } = await getComments(
+          messageId,
+          reset ? undefined : (nextCursor ?? undefined),
+        );
+
+        setComments((previous) => (reset ? data : [...previous, ...data]));
+
+        setNextCursor(cursor);
+        setHasMore(data.length === COMMENTS_PAGE_SIZE);
+      } catch (error) {
+        console.error(error);
+        onError?.(getErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [messageId, nextCursor, hasMore, loading, onError],
+  );
+
+  // Первичная загрузка при появлении/смене messageId: отдельная функция,
+  // первое исполняемое действие — await, без setState до него.
+  useEffect(() => {
+    if (!messageId) return;
+
+    let isCancelled = false;
+
+    const fetchInitial = async () => {
+      try {
+        const { comments: data, nextCursor: cursor } =
+          await getComments(messageId);
+
+        if (isCancelled) return;
+
+        setComments(data);
+        setNextCursor(cursor);
+        setHasMore(data.length === COMMENTS_PAGE_SIZE);
+      } catch (error) {
+        if (isCancelled) return;
+
+        console.error(error);
+        onError?.(getErrorMessage(error));
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchInitial();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [messageId, onError]);
+
+  useEffect(() => {
+    if (!messageId) return;
+
+    const channel = supabase
+      .channel(`comments-${messageId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `message_id=eq.${messageId}`,
+        },
+        ({ new: comment }) => {
+          setComments((previous) => [...previous, comment as Comment]);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [messageId]);
+
+  return {
+    comments,
+    loading,
+    hasMore,
+    loadMore: () => loadComments(false),
+  };
+};
+```
+
+components:
+1. `MessageThread`:
+```
+import { useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
+
+import styles from './MessageThread.module.css';
+import { transitions } from '../../animations/transitions';
+
+import type { Message } from '../../types/message';
+import type { Comment } from '../../types/comment';
+
+type MessageThreadProps = {
+  message: Message;
+  comments: Comment[];
+  loading: boolean;
+  hasMore: boolean;
+  loadMore: () => void;
+};
+
+const INITIAL_ANIMATED_COUNT = 10;
+const COMMENTS_START_DELAY = 0.2;
+const COMMENT_STEP_DELAY = 0.06;
+
+const MessageThread = ({
+  message,
+  comments,
+  loading,
+  hasMore,
+  loadMore,
+}: MessageThreadProps) => {
+  const commentsRef = useRef<HTMLDivElement>(null);
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const previousCommentsCount = useRef(comments.length);
+
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const target = loadMoreRef.current;
+
+    if (!target) return;
+
+    observer.current?.disconnect();
+
+    observer.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !loading) {
+          loadMore();
+        }
+      },
+      {
+        root: commentsRef.current,
+        rootMargin: '200px',
+      },
+    );
+
+    observer.current.observe(target);
+
+    return () => observer.current?.disconnect();
+  }, [loading, hasMore, loadMore]);
+
+  useEffect(() => {
+    const container = commentsRef.current;
+
+    if (!container) return;
+
+    if (comments.length > previousCommentsCount.current) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+
+    previousCommentsCount.current = comments.length;
+  }, [comments]);
+
+  return (
+    <div className={styles.thread}>
+      <motion.p
+        className={styles.message}
+        initial={{
+          opacity: 0,
+          y: -20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          transition: transitions.normal,
+        }}
+      >
+        {message.text}
+      </motion.p>
+
+      <div className={styles.comments} ref={commentsRef}>
+        {comments.map((comment, index) => {
+          const initial = index < INITIAL_ANIMATED_COUNT;
+
+          return (
+            <motion.p
+              key={comment.id}
+              layout
+              className={styles.comment}
+              initial={
+                initial
+                  ? {
+                      opacity: 0,
+                      y: -20,
+                    }
+                  : false
+              }
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  ...transitions.normal,
+                  delay: initial
+                    ? COMMENTS_START_DELAY + index * COMMENT_STEP_DELAY
+                    : 0,
+                },
+              }}
+              transition={transitions.normal}
+            >
+              {comment.text}
+            </motion.p>
+          );
+        })}
+
+        {hasMore && <div ref={loadMoreRef} />}
+
+        {loading && <div className={styles.loading}>Загрузка...</div>}
+      </div>
+    </div>
+  );
+};
+
+export default MessageThread;
+```
+
+2. `MessageList`:
+```
+import { useEffect, useRef } from 'react';
+
+import MessageCard from '../MessageCard/MessageCard';
+
+import type { Message } from '../../types/message';
+
+import styles from './MessageList.module.css';
+
+type MessageListProps = {
+  messages: Message[];
+  newMessageId: number | null;
+  loading: boolean;
+  hasMore: boolean;
+  loadMore: () => void;
+  onMessageClick?: (message: Message) => void;
+};
+
+const INITIAL_ANIMATED_COUNT = 10;
+
+const MessageList = ({
+  messages,
+  newMessageId,
+  loading,
+  hasMore,
+  loadMore,
+  onMessageClick,
+}: MessageListProps) => {
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const element = loadMoreRef.current;
+
+    if (!element) return;
+
+    observer.current?.disconnect();
+
+    observer.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !loading) {
+          loadMore();
+        }
+      },
+      {
+        rootMargin: '300px',
+      },
+    );
+
+    observer.current.observe(element);
+
+    return () => observer.current?.disconnect();
+  }, [loading, hasMore, loadMore]);
+
+  return (
+    <div className={styles.message_list}>
+      {messages.map((message, index) => (
+        <MessageCard
+          key={message.id}
+          message={message}
+          onClick={onMessageClick}
+          initial={index < INITIAL_ANIMATED_COUNT}
+          order={index}
+          isNew={message.id === newMessageId}
+          commentsCount={message.comments_count}
+        />
+      ))}
+
+      {hasMore && <div ref={loadMoreRef} />}
+
+      {loading && <div className={styles.loading}>Загрузка...</div>}
+    </div>
+  );
+};
+
+export default MessageList;
+```
+
+3. `Content`:
+```
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'motion/react';
+
+import styles from './Content.module.css';
+
+import Title from '../Title/Title';
+import MessageList from '../MessageList/MessageList';
+import MessageThread from '../MessageThread/MessageThread';
+import Button from '../Button/Button';
+import Modal from '../Modal/Modal';
+import MessageForm from '../MessageForm/MessageForm';
+
+import pencilIcon from '../../assets/icons/pencil.svg';
+import sendIcon from '../../assets/icons/send.svg';
+
+import type { Message } from '../../types/message';
+
+import { createMessage, getMessageById } from '../../services/messages';
+import { createComment } from '../../services/comments';
+import { useMessages } from '../../hooks/useMessages';
+import { useComments } from '../../hooks/useComments';
+
+import Status from '../Status/Status';
+import { useStatus } from '../../hooks/useStatus';
+import { getErrorMessage } from '../../utils/getErrorMessage';
+import { checkSendCooldown, markSent } from '../../utils/checkSendCooldown';
+
+const MIN_SEND_INTERVAL_MS = 20_000;
+
+const LAST_MESSAGE_SENT_KEY = 'lastMessageSentAt';
+const LAST_COMMENT_SENT_KEY = 'lastCommentSentAt';
+
+const COOLDOWN_STATUS_DURATION = 4000;
+
+const getCooldownText = (seconds: number) =>
+  `Не так быстро. Подождите ${seconds} сек.`;
+
+const Content = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const { status, showStatus, hideStatus } = useStatus();
+
+  const {
+    messages,
+    loading: messagesLoading,
+    hasMore: messagesHasMore,
+    loadMore: loadMoreMessages,
+    newMessageId,
+  } = useMessages(showStatus);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [commentText, setCommentText] = useState('');
+
+  const numericId = id ? Number(id) : null;
+
+  // Сообщение, дозагруженное отдельным запросом (если его нет
+  // в уже подгруженной пагинацией части списка messages).
+  const [fetchedMessage, setFetchedMessage] = useState<Message | null>(null);
+
+  const selectedMessage = useMemo(() => {
+    if (numericId === null) return null;
+
+    const found = messages.find((message) => message.id === numericId);
+    if (found) return found;
+
+    if (fetchedMessage?.id === numericId) return fetchedMessage;
+
+    return null;
+  }, [numericId, messages, fetchedMessage]);
+
+  useEffect(() => {
+    if (numericId === null) return;
+
+    const alreadyLoaded =
+      messages.some((message) => message.id === numericId) ||
+      fetchedMessage?.id === numericId;
+
+    if (alreadyLoaded) return;
+
+    let isCancelled = false;
+
+    const fetchMessage = async () => {
+      try {
+        const data = await getMessageById(numericId);
+
+        if (isCancelled) return;
+
+        if (!data) {
+          navigate('/404', { replace: true });
+          return;
+        }
+
+        setFetchedMessage(data);
+      } catch (error) {
+        if (isCancelled) return;
+
+        console.error(error);
+        showStatus(getErrorMessage(error), 'error');
+        navigate('/404', { replace: true });
+      }
+    };
+
+    fetchMessage();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [numericId, messages, fetchedMessage, navigate, showStatus]);
+
+  const {
+    comments,
+    loading: commentsLoading,
+    hasMore: commentsHasMore,
+    loadMore: loadMoreComments,
+  } = useComments(selectedMessage?.id ?? null, showStatus);
+
+  const handleSendMessage = async () => {
+    const text = messageText.trim();
+    if (!text) return;
+
+    const remainingSeconds = checkSendCooldown(
+      LAST_MESSAGE_SENT_KEY,
+      MIN_SEND_INTERVAL_MS,
+    );
+
+    if (remainingSeconds > 0) {
+      showStatus(
+        getCooldownText(remainingSeconds),
+        'info',
+        COOLDOWN_STATUS_DURATION,
+      );
+      return;
+    }
+
+    try {
+      await createMessage(text);
+
+      markSent(LAST_MESSAGE_SENT_KEY);
+      setMessageText('');
+      setIsModalOpen(false);
+
+      showStatus('Сообщение отправлено.', 'success');
+    } catch (error) {
+      console.error(error);
+      showStatus(getErrorMessage(error), 'error');
+    }
+  };
+
+  const handleSendComment = async () => {
+    if (!selectedMessage) return;
+
+    const text = commentText.trim();
+    if (!text) return;
+
+    const remainingSeconds = checkSendCooldown(
+      LAST_COMMENT_SENT_KEY,
+      MIN_SEND_INTERVAL_MS,
+    );
+
+    if (remainingSeconds > 0) {
+      showStatus(
+        getCooldownText(remainingSeconds),
+        'info',
+        COOLDOWN_STATUS_DURATION,
+      );
+      return;
+    }
+
+    try {
+      await createComment(selectedMessage.id, text);
+
+      markSent(LAST_COMMENT_SENT_KEY);
+      setCommentText('');
+
+      showStatus('Ответ отправлен.', 'success');
+    } catch (error) {
+      console.error(error);
+      showStatus(getErrorMessage(error), 'error');
+    }
+  };
+
+  const handleOpenThread = (message: Message) => {
+    navigate(`/messages/${message.id}`);
+  };
+
+  const handleCloseThread = () => {
+    setCommentText('');
+    navigate('/');
+  };
+
+  return (
+    <div className={styles.content}>
+      <motion.div className={styles.messages}>
+        <div className={styles.title_container}>
+          <Title>
+            Делись тем,
+            <br />о чём молчишь
+          </Title>
+        </div>
+
+        <MessageList
+          messages={messages}
+          onMessageClick={handleOpenThread}
+          newMessageId={newMessageId}
+          loading={messagesLoading}
+          hasMore={messagesHasMore}
+          loadMore={loadMoreMessages}
+        />
+      </motion.div>
+
+      <motion.div
+        className={styles.write_button}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+      >
+        <Button icon={pencilIcon} onClick={() => setIsModalOpen(true)} />
+      </motion.div>
+
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        footer={
+          <>
+            <MessageForm value={messageText} onChange={setMessageText} />
+
+            <Button
+              icon={sendIcon}
+              text='Отправить'
+              iconPosition='end'
+              onClick={handleSendMessage}
+              disabled={!messageText.trim()}
+            />
+          </>
+        }
+      />
+
+      <Modal
+        open={selectedMessage !== null}
+        onClose={handleCloseThread}
+        footer={
+          selectedMessage && (
+            <>
+              <MessageForm
+                value={commentText}
+                onChange={setCommentText}
+                placeholder='Ответить...'
+                autoFocus={false}
+              />
+
+              <Button
+                icon={sendIcon}
+                text='Отправить'
+                iconPosition='end'
+                onClick={handleSendComment}
+                disabled={!commentText.trim()}
+              />
+            </>
+          )
+        }
+      >
+        {selectedMessage && (
+          <MessageThread
+            message={selectedMessage}
+            comments={comments}
+            loading={commentsLoading}
+            hasMore={commentsHasMore}
+            loadMore={loadMoreComments}
+          />
+        )}
+      </Modal>
+
+      <Status
+        open={status.open}
+        text={status.text}
+        type={status.type}
+        duration={status.duration}
+        onClose={hideStatus}
+      />
+    </div>
+  );
+};
+
+export default Content;
+```
+
+4. `MessageCard`:
+```
+import { motion } from "motion/react";
+import type { Message } from "../../types/message";
+import styles from "./MessageCard.module.css";
+import { transitions } from "../../animations/transitions";
+import ReplyMeta from "../ReplyMeta/ReplyMeta";
+
+type MessageCardProps = {
+  message: Message;
+  order: number;
+  initial: boolean;
+  isNew: boolean;
+  commentsCount: number;
+  onClick?: (message: Message) => void;
+};
+
+const MessageCard = ({
+  message,
+  order,
+  initial,
+  isNew,
+  commentsCount,
+  onClick,
+}: MessageCardProps) => {
+  return (
+    <motion.article
+      layout
+      className={styles.card}
+      onClick={() => onClick?.(message)}
+      initial={
+        initial
+          ? {
+              opacity: 0,
+              y: -20,
+            }
+          : false
+      }
+      animate={{
+        opacity: 1,
+        y: 0,
+        transition: {
+          ...transitions.normal,
+          delay: initial ? order * 0.06 : 0,
+        },
+      }}
+      whileTap={{
+        scale: 0.9,
+        transition: transitions.normal,
+      }}
+      transition={transitions.normal}
+    >
+      {isNew && (
+        <motion.div
+          layoutId={`new-${message.id}`}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={transitions.normal}
+        />
+      )}
+      <span className={styles.id}>#{message.id}</span>
+      <p className={styles.text}>{message.text}</p>
+      <div className={styles.meta}>
+        <ReplyMeta value={commentsCount} />
+      </div>
+    </motion.article>
+  );
+};
+
+export default MessageCard;
+```
+
+5. `ReplyMeta`:
+```
+import styles from "./ReplyMeta.module.css";
+import { pluralize } from "../../utils/pluralize";
+
+type ReplyMetaProps = {
+  value: number;
+};
+
+const ReplyMeta = ({ value }: ReplyMetaProps) => {
+  return (
+    <div className={styles.meta}>
+      <p className={styles.value}>{value}</p>
+      <p className={styles.text}>
+        {pluralize(value, "Ответ", "Ответа", "Ответов")}
+      </p>
+    </div>
+  );
+};
+
+export default ReplyMeta;
+```

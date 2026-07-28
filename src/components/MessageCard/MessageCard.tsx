@@ -1,15 +1,17 @@
-import { motion } from "motion/react";
-import type { Message } from "../../types/message";
-import styles from "./MessageCard.module.css";
-import { transitions } from "../../animations/transitions";
-import ReplyMeta from "../ReplyMeta/ReplyMeta";
+import { motion } from 'motion/react';
+
+import type { Message } from '../../types/message';
+
+import styles from './MessageCard.module.css';
+import { transitions } from '../../animations/transitions';
+
+import ReplyMeta from '../ReplyMeta/ReplyMeta';
 
 type MessageCardProps = {
   message: Message;
   order: number;
   initial: boolean;
   isNew: boolean;
-  commentsCount: number;
   onClick?: (message: Message) => void;
 };
 
@@ -18,7 +20,6 @@ const MessageCard = ({
   order,
   initial,
   isNew,
-  commentsCount,
   onClick,
 }: MessageCardProps) => {
   return (
@@ -51,15 +52,24 @@ const MessageCard = ({
       {isNew && (
         <motion.div
           layoutId={`new-${message.id}`}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{
+            opacity: 0,
+            scale: 0.95,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
           transition={transitions.normal}
         />
       )}
+
       <span className={styles.id}>#{message.id}</span>
+
       <p className={styles.text}>{message.text}</p>
+
       <div className={styles.meta}>
-        <ReplyMeta value={commentsCount} />
+        <ReplyMeta value={message.comments_count} />
       </div>
     </motion.article>
   );

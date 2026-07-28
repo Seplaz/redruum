@@ -2,5 +2,5 @@ export type Message = {
   id: number;
   text: string;
   created_at: string;
-  commentsCount: number;
+  comments_count: number;
 };

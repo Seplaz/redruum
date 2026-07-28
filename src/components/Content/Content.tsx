@@ -1,35 +1,35 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { motion } from "motion/react";
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'motion/react';
 
-import styles from "./Content.module.css";
+import styles from './Content.module.css';
 
-import Title from "../Title/Title";
-import MessageList from "../MessageList/MessageList";
-import MessageThread from "../MessageThread/MessageThread";
-import Button from "../Button/Button";
-import Modal from "../Modal/Modal";
-import MessageForm from "../MessageForm/MessageForm";
+import Title from '../Title/Title';
+import MessageList from '../MessageList/MessageList';
+import MessageThread from '../MessageThread/MessageThread';
+import Button from '../Button/Button';
+import Modal from '../Modal/Modal';
+import MessageForm from '../MessageForm/MessageForm';
 
-import pencilIcon from "../../assets/icons/pencil.svg";
-import sendIcon from "../../assets/icons/send.svg";
+import pencilIcon from '../../assets/icons/pencil.svg';
+import sendIcon from '../../assets/icons/send.svg';
 
-import type { Message } from "../../types/message";
+import type { Message } from '../../types/message';
 
-import { createMessage, getMessages } from "../../services/messages";
-import { createComment } from "../../services/comments";
-import { supabase } from "../../lib/supabase";
-import { useComments } from "../../hooks/useComments";
+import { createMessage, getMessageById } from '../../services/messages';
+import { createComment } from '../../services/comments';
+import { useMessages } from '../../hooks/useMessages';
+import { useComments } from '../../hooks/useComments';
 
-import Status from "../Status/Status";
-import { useStatus } from "../../hooks/useStatus";
-import { getErrorMessage } from "../../utils/getErrorMessage";
-import { checkSendCooldown, markSent } from "../../utils/checkSendCooldown";
+import Status from '../Status/Status';
+import { useStatus } from '../../hooks/useStatus';
+import { getErrorMessage } from '../../utils/getErrorMessage';
+import { checkSendCooldown, markSent } from '../../utils/checkSendCooldown';
 
 const MIN_SEND_INTERVAL_MS = 20_000;
 
-const LAST_MESSAGE_SENT_KEY = "lastMessageSentAt";
-const LAST_COMMENT_SENT_KEY = "lastCommentSentAt";
+const LAST_MESSAGE_SENT_KEY = 'lastMessageSentAt';
+const LAST_COMMENT_SENT_KEY = 'lastCommentSentAt';
 
 const COOLDOWN_STATUS_DURATION = 4000;
 
@@ -40,90 +40,85 @@ const Content = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isMessagesLoaded, setIsMessagesLoaded] = useState(false);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState("");
-
-  const [commentText, setCommentText] = useState("");
-
-  const [newMessageId, setNewMessageId] = useState<number | null>(null);
-
   const { status, showStatus, hideStatus } = useStatus();
 
-  const commentsByMessage = useComments(showStatus);
+  const {
+    messages,
+    loading: messagesLoading,
+    hasMore: messagesHasMore,
+    loadMore: loadMoreMessages,
+    newMessageId,
+  } = useMessages(showStatus);
 
-  const commentCounts = useMemo(() => {
-    return Object.fromEntries(
-      Object.entries(commentsByMessage).map(([messageId, list]) => [
-        messageId,
-        list.length,
-      ]),
-    );
-  }, [commentsByMessage]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [commentText, setCommentText] = useState('');
+
+  const numericId = id ? Number(id) : null;
+
+  // Сообщение, дозагруженное отдельным запросом (если его нет
+  // в уже подгруженной пагинацией части списка messages).
+  const [fetchedMessage, setFetchedMessage] = useState<Message | null>(null);
 
   const selectedMessage = useMemo(() => {
-    if (!id) return null;
+    if (numericId === null) return null;
 
-    const numericId = Number(id);
+    const found = messages.find((message) => message.id === numericId);
+    if (found) return found;
 
-    return messages.find((message) => message.id === numericId) ?? null;
-  }, [id, messages]);
+    if (fetchedMessage?.id === numericId) return fetchedMessage;
+
+    return null;
+  }, [numericId, messages, fetchedMessage]);
 
   useEffect(() => {
-    const loadMessages = async () => {
+    if (numericId === null) return;
+
+    const alreadyLoaded =
+      messages.some((message) => message.id === numericId) ||
+      fetchedMessage?.id === numericId;
+
+    if (alreadyLoaded) return;
+
+    let isCancelled = false;
+
+    const fetchMessage = async () => {
       try {
-        const data = await getMessages();
-        setMessages(data);
+        const data = await getMessageById(numericId);
+
+        if (isCancelled) return;
+
+        if (!data) {
+          navigate('/404', { replace: true });
+          return;
+        }
+
+        setFetchedMessage(data);
       } catch (error) {
+        if (isCancelled) return;
+
         console.error(error);
-        showStatus(getErrorMessage(error), "error");
-      } finally {
-        setIsMessagesLoaded(true);
+        showStatus(getErrorMessage(error), 'error');
+        navigate('/404', { replace: true });
       }
     };
 
-    loadMessages();
-
-    const channel = supabase
-      .channel("messages")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-        },
-        ({ new: message }) => {
-          const newMessage = message as Message;
-
-          setMessages((previous) => [newMessage, ...previous]);
-          setNewMessageId(newMessage.id);
-        },
-      )
-      .subscribe();
+    fetchMessage();
 
     return () => {
-      supabase.removeChannel(channel);
+      isCancelled = true;
     };
-  }, [showStatus]);
+  }, [numericId, messages, fetchedMessage, navigate, showStatus]);
 
-  useEffect(() => {
-    if (!id) return;
-
-    if (!isMessagesLoaded) return;
-
-    if (!selectedMessage) {
-      navigate("/404", {
-        replace: true,
-      });
-    }
-  }, [id, isMessagesLoaded, selectedMessage, navigate]);
+  const {
+    comments,
+    loading: commentsLoading,
+    hasMore: commentsHasMore,
+    loadMore: loadMoreComments,
+  } = useComments(selectedMessage?.id ?? null, showStatus);
 
   const handleSendMessage = async () => {
     const text = messageText.trim();
-
     if (!text) return;
 
     const remainingSeconds = checkSendCooldown(
@@ -134,7 +129,7 @@ const Content = () => {
     if (remainingSeconds > 0) {
       showStatus(
         getCooldownText(remainingSeconds),
-        "info",
+        'info',
         COOLDOWN_STATUS_DURATION,
       );
       return;
@@ -144,14 +139,13 @@ const Content = () => {
       await createMessage(text);
 
       markSent(LAST_MESSAGE_SENT_KEY);
-
-      setMessageText("");
+      setMessageText('');
       setIsModalOpen(false);
 
-      showStatus("Сообщение отправлено.", "success");
+      showStatus('Сообщение отправлено.', 'success');
     } catch (error) {
       console.error(error);
-      showStatus(getErrorMessage(error), "error");
+      showStatus(getErrorMessage(error), 'error');
     }
   };
 
@@ -159,7 +153,6 @@ const Content = () => {
     if (!selectedMessage) return;
 
     const text = commentText.trim();
-
     if (!text) return;
 
     const remainingSeconds = checkSendCooldown(
@@ -170,7 +163,7 @@ const Content = () => {
     if (remainingSeconds > 0) {
       showStatus(
         getCooldownText(remainingSeconds),
-        "info",
+        'info',
         COOLDOWN_STATUS_DURATION,
       );
       return;
@@ -180,13 +173,12 @@ const Content = () => {
       await createComment(selectedMessage.id, text);
 
       markSent(LAST_COMMENT_SENT_KEY);
+      setCommentText('');
 
-      setCommentText("");
-
-      showStatus("Ответ отправлен.", "success");
+      showStatus('Ответ отправлен.', 'success');
     } catch (error) {
       console.error(error);
-      showStatus(getErrorMessage(error), "error");
+      showStatus(getErrorMessage(error), 'error');
     }
   };
 
@@ -195,8 +187,8 @@ const Content = () => {
   };
 
   const handleCloseThread = () => {
-    setCommentText("");
-    navigate("/");
+    setCommentText('');
+    navigate('/');
   };
 
   return (
@@ -213,20 +205,16 @@ const Content = () => {
           messages={messages}
           onMessageClick={handleOpenThread}
           newMessageId={newMessageId}
-          commentCounts={commentCounts}
+          loading={messagesLoading}
+          hasMore={messagesHasMore}
+          loadMore={loadMoreMessages}
         />
       </motion.div>
 
       <motion.div
         className={styles.write_button}
-        initial={{
-          opacity: 0,
-          scale: 0,
-        }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-        }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
       >
         <Button icon={pencilIcon} onClick={() => setIsModalOpen(true)} />
       </motion.div>
@@ -240,8 +228,8 @@ const Content = () => {
 
             <Button
               icon={sendIcon}
-              text="Отправить"
-              iconPosition="end"
+              text='Отправить'
+              iconPosition='end'
               onClick={handleSendMessage}
               disabled={!messageText.trim()}
             />
@@ -258,14 +246,14 @@ const Content = () => {
               <MessageForm
                 value={commentText}
                 onChange={setCommentText}
-                placeholder="Ответить..."
+                placeholder='Ответить...'
                 autoFocus={false}
               />
 
               <Button
                 icon={sendIcon}
-                text="Отправить"
-                iconPosition="end"
+                text='Отправить'
+                iconPosition='end'
                 onClick={handleSendComment}
                 disabled={!commentText.trim()}
               />
@@ -276,7 +264,10 @@ const Content = () => {
         {selectedMessage && (
           <MessageThread
             message={selectedMessage}
-            comments={commentsByMessage[selectedMessage.id] ?? []}
+            comments={comments}
+            loading={commentsLoading}
+            hasMore={commentsHasMore}
+            loadMore={loadMoreComments}
           />
         )}
       </Modal>
