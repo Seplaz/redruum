@@ -67,7 +67,7 @@ const MessageList = ({
 
       {hasMore && <div ref={loadMoreRef} />}
 
-      {loading && <div className={styles.loading}>Загрузка...</div>}
+      {/* {loading && <div className={styles.loading}>Загрузка...</div>} */}
     </div>
   );
 };

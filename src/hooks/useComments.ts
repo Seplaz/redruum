@@ -17,8 +17,6 @@ export const useComments = (
   const [loading, setLoading] = useState(messageId !== null);
   const [hasMore, setHasMore] = useState(true);
 
-  // Сброс состояния при смене messageId — во время рендера,
-  // а не в эффекте (официальный паттерн React для "reset on prop change").
   const [trackedMessageId, setTrackedMessageId] = useState(messageId);
 
   if (trackedMessageId !== messageId) {
@@ -57,8 +55,6 @@ export const useComments = (
     [messageId, nextCursor, hasMore, loading, onError],
   );
 
-  // Первичная загрузка при появлении/смене messageId: отдельная функция,
-  // первое исполняемое действие — await, без setState до него.
   useEffect(() => {
     if (!messageId) return;
 

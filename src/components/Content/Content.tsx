@@ -56,8 +56,6 @@ const Content = () => {
 
   const numericId = id ? Number(id) : null;
 
-  // Сообщение, дозагруженное отдельным запросом (если его нет
-  // в уже подгруженной пагинацией части списка messages).
   const [fetchedMessage, setFetchedMessage] = useState<Message | null>(null);
 
   const selectedMessage = useMemo(() => {
