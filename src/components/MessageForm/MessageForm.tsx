@@ -28,6 +28,7 @@ const MessageForm = ({
 
   return (
     <div className={styles.form}>
+      <p className={styles.title}>Создать REDRUUM</p>
       <Input
         value={value}
         onChange={onChange}

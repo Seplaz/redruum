@@ -64,7 +64,7 @@ const MessageCard = ({
         />
       )}
 
-      <span className={styles.id}>#{message.id}</span>
+      <span className={styles.id}>RUUM #{message.id}</span>
 
       <p className={styles.text}>{message.text}</p>
 

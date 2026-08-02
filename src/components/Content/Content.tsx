@@ -1,35 +1,35 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "motion/react";
 
-import styles from './Content.module.css';
+import styles from "./Content.module.css";
 
-import Title from '../Title/Title';
-import MessageList from '../MessageList/MessageList';
-import MessageThread from '../MessageThread/MessageThread';
-import Button from '../Button/Button';
-import Modal from '../Modal/Modal';
-import MessageForm from '../MessageForm/MessageForm';
+import Title from "../Title/Title";
+import MessageList from "../MessageList/MessageList";
+import MessageThread from "../MessageThread/MessageThread";
+import Button from "../Button/Button";
+import Modal from "../Modal/Modal";
+import MessageForm from "../MessageForm/MessageForm";
 
-import pencilIcon from '../../assets/icons/pencil.svg';
-import sendIcon from '../../assets/icons/send.svg';
+import pencilIcon from "../../assets/icons/pencil.svg";
+import sendIcon from "../../assets/icons/send.svg";
 
-import type { Message } from '../../types/message';
+import type { Message } from "../../types/message";
 
-import { createMessage, getMessageById } from '../../services/messages';
-import { createComment } from '../../services/comments';
-import { useMessages } from '../../hooks/useMessages';
-import { useComments } from '../../hooks/useComments';
+import { createMessage, getMessageById } from "../../services/messages";
+import { createComment } from "../../services/comments";
+import { useMessages } from "../../hooks/useMessages";
+import { useComments } from "../../hooks/useComments";
 
-import Status from '../Status/Status';
-import { useStatus } from '../../hooks/useStatus';
-import { getErrorMessage } from '../../utils/getErrorMessage';
-import { checkSendCooldown, markSent } from '../../utils/checkSendCooldown';
+import Status from "../Status/Status";
+import { useStatus } from "../../hooks/useStatus";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+import { checkSendCooldown, markSent } from "../../utils/checkSendCooldown";
 
 const MIN_SEND_INTERVAL_MS = 20_000;
 
-const LAST_MESSAGE_SENT_KEY = 'lastMessageSentAt';
-const LAST_COMMENT_SENT_KEY = 'lastCommentSentAt';
+const LAST_MESSAGE_SENT_KEY = "lastMessageSentAt";
+const LAST_COMMENT_SENT_KEY = "lastCommentSentAt";
 
 const COOLDOWN_STATUS_DURATION = 4000;
 
@@ -51,8 +51,8 @@ const Content = () => {
   } = useMessages(showStatus);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageText, setMessageText] = useState('');
-  const [commentText, setCommentText] = useState('');
+  const [messageText, setMessageText] = useState("");
+  const [commentText, setCommentText] = useState("");
 
   const numericId = id ? Number(id) : null;
 
@@ -87,7 +87,7 @@ const Content = () => {
         if (isCancelled) return;
 
         if (!data) {
-          navigate('/404', { replace: true });
+          navigate("/404", { replace: true });
           return;
         }
 
@@ -96,8 +96,8 @@ const Content = () => {
         if (isCancelled) return;
 
         console.error(error);
-        showStatus(getErrorMessage(error), 'error');
-        navigate('/404', { replace: true });
+        showStatus(getErrorMessage(error), "error");
+        navigate("/404", { replace: true });
       }
     };
 
@@ -127,7 +127,7 @@ const Content = () => {
     if (remainingSeconds > 0) {
       showStatus(
         getCooldownText(remainingSeconds),
-        'info',
+        "info",
         COOLDOWN_STATUS_DURATION,
       );
       return;
@@ -137,13 +137,13 @@ const Content = () => {
       await createMessage(text);
 
       markSent(LAST_MESSAGE_SENT_KEY);
-      setMessageText('');
+      setMessageText("");
       setIsModalOpen(false);
 
-      showStatus('Сообщение отправлено.', 'success');
+      showStatus("Сообщение отправлено.", "success");
     } catch (error) {
       console.error(error);
-      showStatus(getErrorMessage(error), 'error');
+      showStatus(getErrorMessage(error), "error");
     }
   };
 
@@ -161,7 +161,7 @@ const Content = () => {
     if (remainingSeconds > 0) {
       showStatus(
         getCooldownText(remainingSeconds),
-        'info',
+        "info",
         COOLDOWN_STATUS_DURATION,
       );
       return;
@@ -171,12 +171,12 @@ const Content = () => {
       await createComment(selectedMessage.id, text);
 
       markSent(LAST_COMMENT_SENT_KEY);
-      setCommentText('');
+      setCommentText("");
 
-      showStatus('Ответ отправлен.', 'success');
+      showStatus("Ответ отправлен.", "success");
     } catch (error) {
       console.error(error);
-      showStatus(getErrorMessage(error), 'error');
+      showStatus(getErrorMessage(error), "error");
     }
   };
 
@@ -185,8 +185,8 @@ const Content = () => {
   };
 
   const handleCloseThread = () => {
-    setCommentText('');
-    navigate('/');
+    setCommentText("");
+    navigate("/");
   };
 
   return (
@@ -225,9 +225,9 @@ const Content = () => {
             <MessageForm value={messageText} onChange={setMessageText} />
 
             <Button
-              icon={sendIcon}
-              text='Отправить'
-              iconPosition='end'
+              // icon={sendIcon}
+              text="Создать"
+              // iconPosition='end'
               onClick={handleSendMessage}
               disabled={!messageText.trim()}
             />
@@ -244,14 +244,14 @@ const Content = () => {
               <MessageForm
                 value={commentText}
                 onChange={setCommentText}
-                placeholder='Ответить...'
+                placeholder="Ответить..."
                 autoFocus={false}
               />
 
               <Button
                 icon={sendIcon}
-                text='Отправить'
-                iconPosition='end'
+                text="Отправить"
+                iconPosition="end"
                 onClick={handleSendComment}
                 disabled={!commentText.trim()}
               />

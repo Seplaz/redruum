@@ -7,9 +7,9 @@
 }
 
 .value {
-  font-size: var(--font-size-s);
+  font-size: var(--font-size-xs);
 }
 
 .text {
-  font-size: var(--font-size-s);
+  font-size: var(--font-size-xs);
 }

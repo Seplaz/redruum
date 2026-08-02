@@ -1,5 +1,5 @@
 .modal {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 2;
   display: flex;
@@ -12,13 +12,11 @@
   min-block-size: 0;
 }
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .modal {
-    inset: 24px 0;
     border-radius: var(--border-radius-l);
-    block-size: calc(100% - 48px);
   }
-}
+} */
 
 .header {
   display: flex;

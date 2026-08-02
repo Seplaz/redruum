@@ -3,12 +3,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: start;
+  gap: 6px;
   border: 1px solid rgba(234, 229, 223, 0.25);
   border-radius: var(--border-radius-l);
   padding: 12px;
-  box-shadow:
-    0 8px 24px rgba(10, 10, 10, 0.18),
-    inset 0 1px 0 rgba(234, 229, 223, 0.1);
+  box-shadow: 0 0 4px rgba(10, 10, 10, 0.25);
   outline: none;
   color: var(--text-dark);
   background-color: var(--glass);
@@ -24,8 +23,8 @@
   padding: 6px;
   color: var(--text-dark);
   font-family: "Inter Italic";
-  font-weight: 700;
-  font-size: var(--font-size-m);
+  font-weight: 600;
+  font-size: var(--font-size-s);
 }
 
 .text {
@@ -33,7 +32,7 @@
   overflow-wrap: break-word;
   font-family: "Inter";
   font-weight: 400;
-  font-size: var(--font-size-m);
+  font-size: var(--font-size-s);
   word-break: break-word;
   inline-size: 100%;
   white-space: pre-wrap;
