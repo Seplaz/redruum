@@ -2,17 +2,18 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 1;
   margin: 0 auto;
   overflow: hidden;
   inline-size: 100%;
   max-inline-size: 768px;
+  min-block-size: 0;
 }
 
 .messages {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  flex: 1;
+  gap: 24px;
   padding: 24px;
   overflow-y: auto;
   scrollbar-width: none;
@@ -27,12 +28,6 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.message_list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 .write_button {

@@ -50,7 +50,7 @@ const CardList = ({
   }, [loading, hasMore, loadMore]);
 
   return (
-    <div className={styles.message_list}>
+    <div className={styles.list}>
       {messages.map((message, index) => (
         <Card
           key={message.id}

@@ -2,16 +2,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 24px;
+  padding: 23px 24px;
   background-color: var(--bg);
 }
 
-.logo {
-  display: block;
-  inline-size: 97px;
+.manifesto {
+  display: flex;
+  align-items: center;
+  min-height: 16px;
 }
 
 .text {
-  font-family: 'CoFo Kak Black';
+  font-family: "CoFo Kak Black";
   font-size: var(--font-size-s);
+}
+
+.logo {
+  width: auto;
+  height: 12px;
+  pointer-events: none;
+  user-select: none;
 }

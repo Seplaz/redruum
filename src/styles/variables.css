@@ -9,13 +9,13 @@
 
   --glass: rgba(234, 229, 223, 0.08);
   --red-glass: rgba(185, 10, 22, 0.5);
-  --border-glass: rgba(234, 229, 223, 0.1);
+  --border-glass: rgba(234, 229, 223, 0.05);
 
   /* Status */
 
-  --status-success-bg: rgba(216, 239, 223, 0.85);
-  --status-info-bg: rgba(234, 229, 223, 0.85);
-  --status-error-bg: rgba(255, 220, 220, 0.85);
+  --status-success-bg: rgba(216, 239, 223, 0.5);
+  --status-info-bg: rgba(234, 229, 223, 0.5);
+  --status-error-bg: rgba(255, 220, 220, 0.5);
 
   --status-success-accent: #4f9d69;
   --status-info-accent: #7a6e68;

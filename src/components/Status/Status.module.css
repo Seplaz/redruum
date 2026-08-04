@@ -5,16 +5,23 @@
   justify-content: center;
   align-items: center;
   margin-inline: auto;
-  border: 1px solid rgba(234, 229, 223, 0.25);
-  border-radius: var(--border-radius-l);
+  border: 1px solid var(--border-glass);
+  border-radius: 24px;
   padding: 12px 20px;
   box-shadow:
-    0 8px 24px rgba(10, 10, 10, 0.18),
-    inset 0 1px 0 rgba(234, 229, 223, 0.1);
+    0px 2px 12px rgba(10, 10, 10, 0.1),
+    inset 0 2px 6px rgba(255, 255, 255, 0.05);
   overflow: hidden;
   color: var(--text-dark);
-  font-family: 'Inter';
+  font-family: "Inter";
   font-size: var(--font-size-s);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    ),
+    rgba(185, 10, 22, 0.45);
   backdrop-filter: blur(var(--blur));
   pointer-events: none;
   inset-block-start: calc(64px + 24px);

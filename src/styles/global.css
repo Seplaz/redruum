@@ -7,8 +7,17 @@
   padding: 0;
 }
 
+html,
+body,
+#root {
+  block-size: 100%;
+}
+
 body {
   color: var(--text-light);
   background: var(--bg);
+}
+
+#root {
   block-size: 100dvb;
 }

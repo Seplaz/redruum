@@ -6,12 +6,13 @@
 }
 
 .background img {
-  inline-size: 100%;
-  block-size: 100%;
+  display: block;
   object-fit: cover;
   object-position: top;
   opacity: 0;
   transition: opacity 200ms linear;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
 .background img.loaded {
