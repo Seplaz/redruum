@@ -6,8 +6,8 @@
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: var(--glass);
-  backdrop-filter: blur(var(--blur));
+  background-color: var(--surface);
+  /* backdrop-filter: blur(var(--blur)); */
   block-size: 100%;
   min-block-size: 0;
 }

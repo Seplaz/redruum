@@ -1,12 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
+import Card from "../Card/Card";
+import type { Message } from "../../types/message";
+import styles from "./CardList.module.css";
 
-import MessageCard from '../MessageCard/MessageCard';
-
-import type { Message } from '../../types/message';
-
-import styles from './MessageList.module.css';
-
-type MessageListProps = {
+type CardListProps = {
   messages: Message[];
   newMessageId: number | null;
   loading: boolean;
@@ -17,14 +14,14 @@ type MessageListProps = {
 
 const INITIAL_ANIMATED_COUNT = 10;
 
-const MessageList = ({
+const CardList = ({
   messages,
   newMessageId,
   loading,
   hasMore,
   loadMore,
   onMessageClick,
-}: MessageListProps) => {
+}: CardListProps) => {
   const observer = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,7 +40,7 @@ const MessageList = ({
         }
       },
       {
-        rootMargin: '300px',
+        rootMargin: "300px",
       },
     );
 
@@ -55,7 +52,7 @@ const MessageList = ({
   return (
     <div className={styles.message_list}>
       {messages.map((message, index) => (
-        <MessageCard
+        <Card
           key={message.id}
           message={message}
           onClick={onMessageClick}
@@ -72,4 +69,4 @@ const MessageList = ({
   );
 };
 
-export default MessageList;
+export default CardList;

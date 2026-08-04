@@ -31,9 +31,9 @@ const Modal = ({ open, onClose, title, children, footer }: ModalProps) => {
           <motion.div
             className={styles.modal}
             onClick={(event) => event.stopPropagation()}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1}}
-            exit={{ opacity: 0, x: -12 }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
             transition={transitions.normal}
           >
             <header className={styles.header}>

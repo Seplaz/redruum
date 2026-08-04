@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import styles from "./Content.module.css";
 
 import Title from "../Title/Title";
-import MessageList from "../MessageList/MessageList";
+import CardList from "../CardList/CardList";
 import MessageThread from "../MessageThread/MessageThread";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
@@ -199,7 +199,7 @@ const Content = () => {
           </Title>
         </div>
 
-        <MessageList
+        <CardList
           messages={messages}
           onMessageClick={handleOpenThread}
           newMessageId={newMessageId}

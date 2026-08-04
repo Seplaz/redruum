@@ -7,8 +7,9 @@
   --text-light: #eae5df;
   --text-secondary: rgba(10, 10, 10, 0.5);
 
-  --glass: rgba(234, 229, 223, 0.75);
-  --glass-hover: rgba(234, 229, 223, 0.9);
+  --glass: rgba(234, 229, 223, 0.08);
+  --red-glass: rgba(185, 10, 22, 0.5);
+  --border-glass: rgba(234, 229, 223, 0.1);
 
   /* Status */
 
@@ -21,17 +22,5 @@
   --status-error-accent: #b90a16;
 
   /* Effects */
-  --blur: 24px;
-
-  /* Radius */
-  --border-radius-s: 6px;
-  --border-radius-m: 12px;
-  --border-radius-l: 24px;
-
-  /* Font Size */
-  --font-size-xs: 10px;
-  --font-size-s: 12px;
-  --font-size-m: 16px;
-  --font-size-l: 24px;
-  --font-size-xl: 28px;
+  --blur: 12px;
 }

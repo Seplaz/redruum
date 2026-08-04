@@ -1,6 +1,3 @@
-export const messagePlaceholders = [
-  "Что хочется написать прямо сейчас?",
-  "Написать какую нибудь хуйню...",
-];
+export const messagePlaceholders = ["Написать какую нибудь хуйню..."];
 
 export const commentPlaceholders = ["Написать комментарий..."];

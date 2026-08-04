@@ -1,13 +1,10 @@
-import { motion } from 'motion/react';
+import { motion } from "motion/react";
+import type { Message } from "../../types/message";
+import styles from "./Card.module.css";
+import { transitions } from "../../animations/transitions";
+import ReplyMeta from "../ReplyMeta/ReplyMeta";
 
-import type { Message } from '../../types/message';
-
-import styles from './MessageCard.module.css';
-import { transitions } from '../../animations/transitions';
-
-import ReplyMeta from '../ReplyMeta/ReplyMeta';
-
-type MessageCardProps = {
+type CardProps = {
   message: Message;
   order: number;
   initial: boolean;
@@ -15,13 +12,13 @@ type MessageCardProps = {
   onClick?: (message: Message) => void;
 };
 
-const MessageCard = ({
+const Card = ({
   message,
   order,
   initial,
   isNew,
   onClick,
-}: MessageCardProps) => {
+}: CardProps) => {
   return (
     <motion.article
       layout
@@ -64,7 +61,7 @@ const MessageCard = ({
         />
       )}
 
-      <span className={styles.id}>RUUM #{message.id}</span>
+      <span className={styles.id}>#{message.id}</span>
 
       <p className={styles.text}>{message.text}</p>
 
@@ -75,4 +72,4 @@ const MessageCard = ({
   );
 };
 
-export default MessageCard;
+export default Card;
