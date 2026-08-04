@@ -10,5 +10,5 @@
 body {
   color: var(--text-light);
   background: var(--bg);
-  block-size: 100svb;
+  block-size: 100dvb;
 }

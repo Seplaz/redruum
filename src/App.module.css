@@ -2,7 +2,7 @@
   position: relative;
   display: grid;
   grid-template-rows: min-content 1fr min-content;
-  background-color: #0a0a0a;
+  background-color: var(--bg);
   block-size: 100dvb;
   isolation: isolate;
 }
