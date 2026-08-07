@@ -13,13 +13,12 @@
 }
 
 .text {
-  font-family: "CoFo Kak Black";
+  font-family: 'CoFo Kak Black';
   font-size: var(--font-size-s);
 }
 
 .logo {
-  width: auto;
-  height: 12px;
+  inline-size: 97px;
   pointer-events: none;
   user-select: none;
 }
