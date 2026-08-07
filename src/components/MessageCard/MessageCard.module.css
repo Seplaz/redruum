@@ -33,7 +33,7 @@
   overflow-wrap: break-word;
   font-family: "Inter";
   font-weight: 400;
-  font-size: var(--font-size-m);
+  font-size: var(--font-size-s);
   word-break: break-word;
   inline-size: 100%;
   white-space: pre-wrap;
